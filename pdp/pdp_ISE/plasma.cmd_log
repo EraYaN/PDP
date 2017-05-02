@@ -1,0 +1,6 @@
+xst -intstyle ise -ifn "/home/pdp/PDP/pdp/pdp_ISE/plasma.xst" -ofn "/home/pdp/PDP/pdp/pdp_ISE/plasma.syr" 
+ngdbuild -intstyle ise -dd _ngo -nt timestamp -i -p xc4vfx60-ff1152-11 plasma.ngc plasma.ngd  
+map -intstyle ise -p xc4vfx60-ff1152-11 -global_opt off -cm area -ir off -pr off -c 100 -o plasma_map.ncd plasma.ngd plasma.pcf 
+par -w -intstyle ise -ol high -t 1 plasma_map.ncd plasma.ncd plasma.pcf 
+trce -intstyle ise -v 3 -tsi plasma.tsi -s 11 -n 3 -fastpaths -xml plasma.twx plasma.ncd -o plasma.twr plasma.pcf 
+netgen -intstyle ise -s 11  -pcf plasma.pcf -rpw 100 -tpw 0 -ar Structure -tm plasma -insert_pp_buffers true -w -dir netgen/par -ofmt vhdl -sim plasma.ncd plasma_timesim.vhd 

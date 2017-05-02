@@ -23,7 +23,7 @@ vcd file ../pdp_ISE/power.vcd
 
 vcd add -ports -internal sim_tb_top/u1_plasma_top/u1_plasma/*
 
-run 2ms
+run 1ms
 
 quit -sim
 

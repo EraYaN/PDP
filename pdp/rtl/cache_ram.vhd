@@ -31,7 +31,7 @@ use UNISIM.vcomponents.all;
 
 entity cache_ram is
 	generic( 
-		block_count : integer := 1
+		block_count : integer := 2
 	); 
 	port(
 		clk               : in std_logic;

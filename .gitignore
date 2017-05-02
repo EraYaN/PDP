@@ -187,3 +187,4 @@ TSWLatexianTemp*
 ## VHDL
 work/
 vsim.wlf
+*.vcd
