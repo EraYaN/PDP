@@ -22,7 +22,7 @@ susan      & 910.498879                 &  916.969617                           
 bench\_all & 4323.096258                &  4323.096128                          \\ \hline
 \end{tabular}
 \caption{Comparison of benchmark scores reported by project manual and measured benchmark scores. All scores in million cycles.}
-\label{tab:largecachebench}
+\label{tab:baselinebench}
 \end{table}
 For \cref{tab:baselineperformance} the steps from the project manual were followed to generate the specifications. For area 9 $A_{FIFO16/RAMB16}$ and 2022 $A_{SLICE}$ were found which resulted in an area of 514.5 $A_{CLB}$ when the weights of $A_{FIFO16/RAMB16} = A_{CLB}$ and $A_{SLICE} = A_{CLB}/4$ from the project manual were used. For frequency the minimum clock period was found to be \SI{23.686}{\nano\second} which resulted in \SI{42.219}{\mega\hertz} as the maximum frequency. Power was estimated for the pi benchmark with \SI{1}{\milli\second} simulation time which resulted in a total power estimate of \SI{0.698}{\watt}. A more detailed power analysis can be found in \cref{fig:baselinepower}. The power, area and frequency totals are all equal to those reported in the project manual. The more detailed power analysis in \cref{fig:baselinepower} is not exactly the same but very similar to the values found in the manual.
 \begin{table}[H]
@@ -46,24 +46,26 @@ Frequency    &   \SI{42.219}{\mega\hertz}           &  \SI{42.219}{\mega\hertz} 
 \end{figure}
 
 \subsection{Larger cache}
+For the first attempt at improving the speed of the processor the size of the cache was enlarged as dictated by the milestone meeting goals. The default Plasma processor only utilized half of 4 implemented \SI{2}{\kibi\byte} memory blocks so increasing the cache to \SI{8}{\kibi\byte} could be done without increasing the area footprint of the design. For the \SI{16}{\kibi\byte} design 5 extra \SI{2}{\kibi\byte} memory blocks were needed to accommodate not only the extra \SI{8}{\kibi\byte} worth of cache memory but also an extra \SI{2}{\kibi\byte} block for storing cache tags. This increases the area foot print of the \SI{16}{\kibi\byte} design with 5 $A_{FIFO16/RAMB16}$. The results of the benchmarks for the new designs can be found in \cref{tab:largecachebench}. A decrease in clock cycles needed can definitely be observed. The \SI{8}{\kibi\byte} design sees an improvement of $1.79\%$ while the \SI{16}{\kibi\byte} design improves $4.33\%$ in respect to the \SI{4}{\kibi\byte} cache.
 \begin{table}[H]
 \centering
 \begin{tabular}{llll}
 \hline
-Name        & \SI{4}{\kilo\byte} & \SI{8}{\kilo\byte}& \SI{16}{\kilo\byte}\\ \hline
-cjpeg       & 29.316406                 & 28.455434               &           \\
-divide      & 274.860369                & 265.116735               &            \\
-multiply    &   155.283095              & 150.094662               &            \\
-pi          &   845.294532              &  844.614099              &            \\
-fir         &  187.537571               &  186.518289               &            \\
-rsa         &   577.504991              &  574.562761               &            \\
-ssd         &  860.871400               & 833.108159                &            \\
-ssearch     &  475.458147               &  448.907365               &            \\
-susan       &  916.969617               & 914.132525                &            \\
-bench\_all  &  4323.096128              & 4245.510029               &            \\ \hline
+Name        & \SI{4}{\kibi\byte} & \SI{8}{\kibi\byte}& \SI{16}{\kibi\byte}\\ \hline
+cjpeg       & 29.316406                 & 28.455434               &   27.842593        \\
+divide      & 274.860369                & 265.116735               &  255.882408          \\
+multiply    &   155.283095              & 150.094662               &  145.348008          \\
+pi          &   845.294532              &  844.614099              &  843.899086          \\
+fir         &  187.537571               &  186.518289               & 185.996077           \\
+rsa         &   577.504991              &  574.562761               & 570.101571           \\
+ssd         &  860.871400               & 833.108159                & 745.625121           \\
+ssearch     &  475.458147               &  448.907365               & 448.906471           \\
+susan       &  916.969617               & 914.132525                &  912.359250          \\
+bench\_all  &  4323.096128              & 4245.510029               &  4135.960585          \\ \hline
 \end{tabular}
 \caption{Comparison of benchmark scores reported by project manual and measured benchmark scores. All scores in million cycles.}
-\label{tab:baselinebench}
+\label{tab:largecachebench}
 \end{table}
+
 
 \subsection{Improved cache mapping}
