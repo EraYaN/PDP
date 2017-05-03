@@ -1,5 +1,5 @@
 
-SREC_DIR  = /home/pdp/pdp/sim/ddr_content
+SREC_DIR  = /home/pdp/PDP/pdp/sim/ddr_content
 
 MIPS_PRE  = mips-pdp-elf-
 AS_MIPS   = $(MIPS_PRE)as

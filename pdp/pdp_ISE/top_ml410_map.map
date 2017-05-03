@@ -9,7 +9,7 @@ Target Device  : xc4vfx60
 Target Package : ff1152
 Target Speed   : -11
 Mapper Version : virtex4 -- $Revision: 1.55 $
-Mapped Date    : Tue May  2 16:03:50 2017
+Mapped Date    : Wed May  3 07:56:32 2017
 
 Mapping design into LUTs...
 WARNING:LIT:176 - Clock buffer is designated to drive clock loads. BUFG symbol
@@ -71,22 +71,22 @@ Design Summary:
 Number of errors:      0
 Number of warnings:    9
 Logic Utilization:
-  Number of Slice Flip Flops:           773 out of  50,560    1%
+  Number of Slice Flip Flops:           772 out of  50,560    1%
     Number of Slice FFs used for
-    DCM autocalibration logic:          7 out of     773    1%
-  Number of 4 input LUTs:             3,849 out of  50,560    7%
+    DCM autocalibration logic:          7 out of     772    1%
+  Number of 4 input LUTs:             3,815 out of  50,560    7%
     Number of LUTs used for
-    DCM autocalibration logic:          4 out of   3,849    1%
+    DCM autocalibration logic:          4 out of   3,815    1%
       *See INFO below for an explanation of the DCM autocalibration logic
        added by Map
 Logic Distribution:
-  Number of occupied Slices:          2,053 out of  25,280    8%
-    Number of Slices containing only related logic:   2,053 out of   2,053 100%
-    Number of Slices containing unrelated logic:          0 out of   2,053   0%
+  Number of occupied Slices:          2,035 out of  25,280    8%
+    Number of Slices containing only related logic:   2,035 out of   2,035 100%
+    Number of Slices containing unrelated logic:          0 out of   2,035   0%
       *See NOTES below for an explanation of the effects of unrelated logic.
-  Total Number of 4 input LUTs:       3,860 out of  50,560    7%
-    Number used as logic:             3,586
-    Number used as a route-thru:         11
+  Total Number of 4 input LUTs:       3,823 out of  50,560    7%
+    Number used as logic:             3,552
+    Number used as a route-thru:          8
     Number used for Dual Port RAMs:     256
       (Two LUTs used per Dual Port RAM)
     Number used as Shift registers:       7
@@ -97,15 +97,15 @@ Logic Distribution:
     IOB Flip Flops:                       3
   Number of BUFG/BUFGCTRLs:               3 out of      32    9%
     Number used as BUFGs:                 3
-  Number of FIFO16/RAMB16s:              10 out of     232    4%
-    Number used as RAMB16s:              10
+  Number of FIFO16/RAMB16s:              14 out of     232    6%
+    Number used as RAMB16s:              14
   Number of DCM_ADVs:                     1 out of      12    8%
 
-Average Fanout of Non-Clock Nets:                4.23
+Average Fanout of Non-Clock Nets:                4.24
 
 Peak Memory Usage:  800 MB
-Total REAL time to MAP completion:  10 secs 
-Total CPU time to MAP completion:   9 secs 
+Total REAL time to MAP completion:  20 secs 
+Total CPU time to MAP completion:   14 secs 
 
 NOTES:
 

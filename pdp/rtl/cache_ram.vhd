@@ -31,7 +31,7 @@ use UNISIM.vcomponents.all;
 
 entity cache_ram is
 	generic( 
-		block_count : integer := 2
+		block_count : integer := 1
 	); 
 	port(
 		clk               : in std_logic;
@@ -403,7 +403,7 @@ INIT_3F => X"0000000000000000000000000000000000000000000000000000000000000000"
    end generate; --block0
 	
 
-   block1: if (block_count > 1) generate
+   block1: if (1=1) generate
 	begin
 
     ram_byte3 : RAMB16_S9
