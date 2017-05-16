@@ -76,13 +76,13 @@ For the first attempt at improving the speed of the processor the size of the ca
 The default Plasma processor only utilized half of 4 implemented \SI{2}{\kibi\byte} memory blocks so increasing the cache to \SI{8}{\kibi\byte} could be done without increasing the area footprint of the design.
 For the \SI{16}{\kibi\byte} design 5 extra \SI{2}{\kibi\byte} memory blocks were needed to accommodate not only the extra \SI{8}{\kibi\byte} worth of cache memory but also an extra \SI{2}{\kibi\byte} block for storing cache tags.
 This increases the area foot print of the \SI{16}{\kibi\byte} design with 5 $A_{FIFO16/RAMB16}$.
-The results of the benchmarks for the new designs can be found in \cref{tab:largecachebench}.
+The results of the benchmarks for the new designs can be found in \cref{tab:large-cache-bench}.
 A decrease in clock cycles needed can definitely be observed.
 The \SI{8}{\kibi\byte} design sees an improvement of $1.79\%$ while the \SI{16}{\kibi\byte} design improves $4.33\%$ in respect to the \SI{4}{\kibi\byte} cache.
 \begin{table}[H]
     \centering
-    \caption{Comparison of benchmark scores reported by project manual and measured benchmark scores. All scores in million cycles.}
-    \label{tab:largecachebench}
+    \caption{Comparison of benchmark scores for the different cache sizes. All scores in million cycles.}
+    \label{tab:large-cache-bench}
     \begin{tabular}{lS[table-format=3.3]S[table-format=3.3]S[table-format=3.3]}
         \toprule
         \textbf{Name}        & \textbf{\SI{4}{\kibi\byte}} & \textbf{\SI{8}{\kibi\byte}} & \textbf{\SI{16}{\kibi\byte}} \\
@@ -104,4 +104,30 @@ The \SI{8}{\kibi\byte} design sees an improvement of $1.79\%$ while the \SI{16}{
 
 
 \subsection{Improved cache mapping}
+
+For this improvement 4MB of the RAM is mapped to the different sized caches instead of the standard 2MB. The results of the benchmarks for the new designs can be found in \cref{tab:large-cache-bench-improved-mapping}.
+
+\begin{table}[H]
+    \centering
+    \caption{Comparison of benchmark scores for the different cache sizes with the improved cache mapping. All scores in million cycles.}
+    \label{tab:large-cache-bench-improved-mapping}
+    \begin{tabular}{lS[table-format=3.3]S[table-format=3.3]S[table-format=3.3]}
+        \toprule
+        \textbf{Name}        & \textbf{\SI{4}{\kibi\byte}} TODO & \textbf{\SI{8}{\kibi\byte}} TODO & \textbf{\SI{16}{\kibi\byte}} \\
+        \midrule
+        cjpeg       & 29.316406                 & 28.455434               &   23.795771            \\
+        divide      & 274.860369                & 265.116735               &  253.759573              \\
+        multiply    &   155.283095              & 150.094662               &    143.969337            \\
+        pi          &   845.294532              &  844.614099              &    843.898895            \\
+        fir         &  187.537571               &  186.518289               &  185.972178              \\
+        rsa         &   577.504991              &  574.562761               &   545.536853             \\
+        ssd         &  860.871400               & 833.108159                &  671.447640              \\
+        ssearch     &  475.458147               &  448.907365               &   448.906656             \\
+        susan       &  916.969617               & 914.132525                &  769.311762              \\
+        bench\_all  &  4323.096128              & 4245.510029               &  3886.598665              \\
+        \bottomrule
+    \end{tabular}
+
+\end{table}
+
 \end{document}
