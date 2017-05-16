@@ -42,7 +42,8 @@ onerror {resume}
 #Log all the objects in design. These will appear in .wlf file#
 log -r /*
 #View sim_tb_top signals in waveform#
-#add wave -group sim_top sim:/sim_tb_top/*
+#add wave -group sim_top -r sim:/*
+add wave -group opt_cache2 -r sim:/sim_tb_top/u1_plasma_top/u1_plasma/opt_cache2/*
 add wave -group plasma_top sim:/sim_tb_top/u1_plasma_top/*
 add wave -group ddr sim:/sim_tb_top/u1_plasma_top/u2_ddr/*
 
