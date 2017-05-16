@@ -11,10 +11,10 @@ endif
 
 MIPS_PATH  = /home/pdp/toolchain-ctng/mips-pdp-elf/bin/mips-pdp-elf-
 
-SREC_DIR     = /home/pdp/pdp/sim/ddr_content
-CUST_LIBDIR  = /home/pdp/pdp/benchmarks/libs/lib
-LINKLIB      = /home/pdp/pdp/benchmarks/libs/lib/libOS.a
-CUST_INCDIR  = /home/pdp/pdp/benchmarks/libs/include
+SREC_DIR     = /home/pdp/PDP/pdp/sim/ddr_content
+CUST_LIBDIR  = /home/pdp/PDP/pdp/benchmarks/libs/lib
+LINKLIB      = /home/pdp/PDP/pdp/benchmarks/libs/lib/libOS.a
+CUST_INCDIR  = /home/pdp/PDP/pdp/benchmarks/libs/include
 
 CC      = $(MIPS_PATH)gcc
 OBJDUMP = $(MIPS_PATH)objdump
@@ -44,7 +44,10 @@ $(PROG): $(OBJS) $(LINKLIB) $(PROG).o
 	$(CC) $(LDFLAGS) $(OBJS) $(PROG).o $(LDLIBS) -o $@
 	@$(OBJDUMP) -M -no-aliases -d $@ > $@.lst
 
-%.axf: %
+%.out: %
+	mv -f $^ $@
+
+%.axf: %.out
 	$(OBJCOPY) -I elf32-$(ENDIAN)mips -g -O elf32-$(ENDIAN)mips $^ $@
 
 %.bin: %.axf
@@ -76,8 +79,8 @@ images:
 
 # --------- Emulator
 test_sim: $(IMG_FILE)
-	../../tools/mlite.exe $(IMG_FILE) B
+	../../emulator/mlite.exe $(IMG_FILE) B
 # ---------
 
 clean:
-	rm -f $(PROG) $(PROG).bin full_$(PROG).bin $(PROG).lst *.o  
+	rm -f $(PROG) $(PROG).out $(PROG).bin full_$(PROG).bin $(PROG).lst *.o  

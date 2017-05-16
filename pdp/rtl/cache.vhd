@@ -105,14 +105,14 @@ begin
 		end case; --state
 
 		if state = STATE_IDLE then    --check if next access in cached range
-			cache_address <= address_next(12 downto 2);
+			cache_address <= address_next(12 downto 2); 
 			block_select(0) <= address_next(13);
 			if address_next(13) = '0' then
 				block_enable <= "01";
 			else
 				block_enable <= "10";
 			end if;
-			if address_next(30 downto 21) = "0010000000" then  --first 2MB of DDR
+			if address_next(30 downto 22) = "001000000" then  --first 4MB of DDR
 				cache_access <= '1';
 				if byte_we_next = "0000" then     --read cycle
 					cache_we <= '0';
@@ -144,7 +144,7 @@ begin
 		end if;
 
 		if byte_we_next = "0000" or byte_we_next = "1111" then  --read or 32-bit write
-			cache_tag_in <= '0' & address_next(20 downto 14);
+			cache_tag_in <= address_next(21 downto 14);
 		else
 			cache_tag_in <= ONES(7 downto 0);  --invalid tag
 		end if;

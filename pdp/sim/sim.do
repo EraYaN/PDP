@@ -2,6 +2,8 @@
 vlib work
 vlib grlib
 
+printf "Compiling design...\n"
+
 vcom -quiet  -93  -work grlib  ../simlib/grlib/stdlib/version.vhd
 vcom -quiet  -93  -work grlib  ../simlib/grlib/stdlib/stdlib.vhd
 vcom -quiet  -93  -work grlib  ../simlib/grlib/stdlib/stdio.vhd
@@ -30,8 +32,11 @@ vcom -quiet  -93  -work work   ../rtl/clk_gen.vhd
 vcom -quiet  -93  -work work   ../rtl/plasma_top.vhd
 vcom -quiet  -93  -work work   sim_tb_top.vhd
 
+printf "Starting simulation...\n"
 
 vsim -t ps -novopt -L unisim work.sim_tb_top
+
+printf "Configuring simulation...\n"
 
 onerror {resume}
 #Log all the objects in design. These will appear in .wlf file#
@@ -52,5 +57,7 @@ radix hex
 set NumericStdNoWarnings 1
 set StdArithNoWarnings 1
 
+printf "Running simulation...\n"
 run 620us
+printf "Stopping simulation...\n"
 stop
