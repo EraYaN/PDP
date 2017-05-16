@@ -471,6 +471,9 @@ _xmsgs/
 work/
 *.wlf
 *.vcd
+*.qdb
+*.qpg
+*.qtl
 
 ###################
 ## Python Pickle
