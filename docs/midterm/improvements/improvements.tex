@@ -7,10 +7,26 @@
 \begin{document}
 \section{Improvements}
 \label{sec:improvements}
+
+To improve the design different options are available:
+
 \begin{enumerate}
 \item In the current processor the cache is directly mapped. Increasing the associativity of the cache may increase the cache hit rate and avoid having to stall.
 \item As mentioned in the project manual, the 32 cycle multiplier has room for improvement.
 \item The adder is used a lot in the given benchmarks. The adder can definitely be improved.
+\item Additional instructions can be implemented to speed up common instruction patterns.
+\item Usage of profiling to find these common instruction patterns.
 \end{enumerate}
+
+Profiling can be done by executing the benchmark in a simulation and dumping the instructions that were executed to an external file. Currently the program found in \texttt{emulator/mlite.exe} was used to generate the binary needed for counting instructions. A Python program was written to extract these from the dump. Problem is that is not clear whether the dump from \texttt{mlite.exe} does loop unrolling or not. Not unrolling the loops will give a wrong impression of the instructions that were executed. See Figure \ref{fig:instruction-count} for the instruction count from the \texttt{\_all} benchmark.
+
+\begin{figure}[H]
+\centering
+\centerline{\includegraphics[width=1.2\textwidth]{resources/bar-chart.eps}}
+\caption{MIPS instruction count for the \_all benchmark.}
+\label{fig:instruction-count}
+\end{figure}
+
+
 
 \end{document}
