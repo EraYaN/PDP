@@ -42,5 +42,4 @@ fi
 # 	exit 3
 # fi
 
-
 printf 'Done. FPGA Server will take it from here.\n'
