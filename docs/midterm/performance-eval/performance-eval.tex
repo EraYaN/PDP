@@ -79,6 +79,8 @@ This increases the area foot print of the \SI{16}{\kibi\byte} design with 5 $A_{
 The results of the benchmarks for the new designs can be found in \cref{tab:large-cache-bench}.
 A decrease in clock cycles needed can definitely be observed.
 The \SI{8}{\kibi\byte} design sees an improvement of $1.79\%$ while the \SI{16}{\kibi\byte} design improves $4.33\%$ in respect to the \SI{4}{\kibi\byte} cache.
+It should be noted that some benchmarks seem to benefit more from the cache size increase than others.
+Especially for pi, fir, rsa and susan other means of performance improvement will have be found.
 \begin{table}[H]
     \centering
     \caption{Comparison of benchmark scores for the different cache sizes. All scores in million cycles.}
@@ -115,24 +117,25 @@ For this improvement 4MB of the RAM is mapped to the different sized caches inst
         \toprule
         \textbf{Name}        & \textbf{\SI{4}{\kibi\byte}} & \textbf{\SI{8}{\kibi\byte}} & \textbf{\SI{16}{\kibi\byte}} \\
         \midrule
-        cjpeg       & {-}                & 24.952789               &   23.795771            \\
-        divide      & {-}              & 263.797721               &  253.759573              \\
-        multiply    &   {-}             &   149.107092             &    143.969337            \\
-        pi          &   {-}             &   844.613929             &    843.898895            \\
-        fir         &  {-}              &  186.519320               &  185.972178              \\
-        rsa         &   {-}             &   550.666786              &   545.536853             \\
-        ssd         &  {-}              &  759.660444               &  671.447640              \\
-        ssearch     & {-}              & 448.907330                &   448.906656             \\
-        susan       &  {-}              &  773.135782               &  769.311762              \\
-        bench\_all  &  {-}             &  4001.361193              &  3886.598665              \\
+        cjpeg       & 26.799197                & 24.952789               &   23.795771            \\
+        divide      & 274.619391              & 263.797721               &  253.759573              \\
+        multiply    &   155.050827             &   149.107092             &    143.969337            \\
+        pi          &   845.294478             &   844.613929             &    843.898895            \\
+        fir         &  187.537511              &  186.519320               &  185.972178              \\
+        rsa         &   554.109350             &   550.666786              &   545.536853             \\
+        ssd         &  788.654931              &  759.660444               &  671.447640              \\
+        ssearch     & 475.458132              & 448.907330                &   448.906656             \\
+        susan       &  779.522541              &  773.135782               &  769.311762              \\
+        bench\_all  &  4087.046358             &  4001.361193              &  3886.598665              \\
         \bottomrule
     \end{tabular}
 
 \end{table}
 
-Due to time constraints the version with improved mapping for \SI{4}{\kibi\byte} was not implemented.
-Mapping 4MB instead of 2MB required an extra bit in the cache tag which was easy to implement for \SI{8}{\kibi\byte} and \SI{16}{\kibi\byte} as there was still room in the cache tag RAM but would have required an (inefficiently utilised) expansion of the cache tag RAM to implement for \SI{4}{\kibi\byte}.
-Which would technically double the amount of cache tag RAM, by for example using the bigger version of the RAM block on this FPGA.
+Mapping 4MB instead of 2MB required an extra bit in the cache tag which was easy to implement for \SI{8}{\kibi\byte} and \SI{16}{\kibi\byte} as there was still room in the cache tag RAM.
+For the \SI{4}{\kibi\byte} version the \SI{2}{\kibi\byte} had to be adjusted to allow for \SI{2}{\byte} word sizes as the cache tags had grown to large for the standard RAM block.
+Again, some benchmarks benefit more from the improvement than others, but across the board there is still a very noticeable performance increase.
+This version of the \SI{8}{\kibi\byte} is noteworthy as it makes very efficient uses of the generated RAM blocks, making full use of the cache tag RAM (with the parity bits) and using all 4 \SI{2}{\kibi\byte} generated for the cache ram.  
 
 
 \end{document}
