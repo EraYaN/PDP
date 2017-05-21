@@ -137,5 +137,21 @@ For the \SI{4}{\kibi\byte} version the \SI{2}{\kibi\byte} had to be adjusted to 
 Again, some benchmarks benefit more from the improvement than others, but across the board there is still a very noticeable performance increase.
 This version of the \SI{8}{\kibi\byte} is noteworthy as it makes very efficient uses of the generated RAM blocks, making full use of the cache tag RAM (with the parity bits) and using all 4 \SI{2}{\kibi\byte} generated for the cache ram.  
 
+% Uncommented speedup lines in mult.vhd
+% ==========================================================
+%   Million clock cycles:
+% ----------------------------------------------------------
+%    ssd           458.859045
+%    cjpeg          23.778607
+%    ssearch       448.906598
+%    pi            631.320438
+%    susan         447.297157
+%    multiply      137.141246
+%    divide        242.681395
+%    fir           163.628579
+%    rsa           510.309530
+
+% ----------------------------------------------------------
+%    Total:       3063.922595
 
 \end{document}

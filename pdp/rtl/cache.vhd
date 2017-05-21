@@ -45,15 +45,15 @@ architecture logic of cache is
 	constant STATE_MISSED   : state_type := "10";
 	constant STATE_WAITING  : state_type := "11";
 
-	type mem8_vector IS ARRAY (NATURAL RANGE<>) OF std_logic_vector(7 downto 0);
+	type mem8_vector IS ARRAY (NATURAL RANGE<>) OF std_logic_vector(8 downto 0);
 
 	signal state_reg        : state_type;
 	signal state            : state_type;
 	signal state_next       : state_type;
 
 	signal cache_address    : std_logic_vector(10 downto 0);
-	signal cache_tag_in     : std_logic_vector(7 downto 0);
-	signal cache_tag_reg    : std_logic_vector(7 downto 0);
+	signal cache_tag_in     : std_logic_vector(8 downto 0);
+	signal cache_tag_reg    : std_logic_vector(8 downto 0);
 	signal cache_tag_out    : mem8_vector(1 downto 0);
 	signal block_select		: std_logic_vector(0 downto 0);
 	signal block_select_buf	: std_logic_vector(0 downto 0);
@@ -112,7 +112,7 @@ begin
 			else
 				block_enable <= "10";
 			end if;
-			if address_next(30 downto 22) = "001000000" then  --first 4MB of DDR
+			if address_next(30 downto 23) = "00100000" then  --first 8MB of DDR
 				cache_access <= '1';
 				if byte_we_next = "0000" then     --read cycle
 					cache_we <= '0';
@@ -144,14 +144,14 @@ begin
 		end if;
 
 		if byte_we_next = "0000" or byte_we_next = "1111" then  --read or 32-bit write
-			cache_tag_in <= address_next(21 downto 14);
+			cache_tag_in <= address_next(22 downto 14);
 		else
-			cache_tag_in <= ONES(7 downto 0);  --invalid tag
+			cache_tag_in <= ONES(8 downto 0);  --invalid tag
 		end if;
 
 		if reset = '1' then
 			state_reg <= STATE_IDLE;
-			cache_tag_reg <= ZERO(7 downto 0);
+			cache_tag_reg <= ZERO(8 downto 0);
 		elsif rising_edge(clk) then
 			state_reg <= state_next;
 			if state = STATE_IDLE and state_reg /= STATE_MISSED then
@@ -239,12 +239,12 @@ begin
 			INIT_3F => X"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
 		)
 		port map (
-			DO   => cache_tag_out(0),
-			DOP  => open, 
+			DO   => cache_tag_out(0)(7 downto 0),
+			DOP  => cache_tag_out(0)(8 downto 8), 
 			ADDR => cache_address,             --registered
 			CLK  => clk, 
-			DI   => cache_tag_in,  --registered
-			DIP  => ZERO(0 downto 0),
+			DI   => cache_tag_in(7 downto 0),  --registered
+			DIP  => cache_tag_in(8 downto 8),
 			EN   => block_enable(0),
 			SSR  => ZERO(0),
 			WE   => cache_we
@@ -326,12 +326,12 @@ begin
 			INIT_3F => X"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
 		)
 		port map (
-			DO   => cache_tag_out(1),
-			DOP  => open, 
+			DO   => cache_tag_out(1)(7 downto 0),
+			DOP  => cache_tag_out(1)(8 downto 8), 
 			ADDR => cache_address,             --registered
 			CLK  => clk, 
-			DI   => cache_tag_in,  --registered
-			DIP  => ZERO(0 downto 0),
+			DI   => cache_tag_in(7 downto 0),  --registered
+			DIP  => cache_tag_in(8 downto 8),
 			EN   => block_enable(1),
 			SSR  => ZERO(0),
 			WE   => cache_we
