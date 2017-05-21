@@ -8,17 +8,16 @@
 \section{Improvements}
 \label{sec:improvements}
 
-To improve the design different options are available:
+\Cref{fig:instruction-count} shows the result of dynamic profiling for all benchmarks. This gives a very good idea of what instructions are used frequently and should therefore be the focus of improvements. This chart does not take into account the amount of cycles a single instruction needs. Most importantly, this chart shows that multiplication and branching should be improved upon as they both occur frequently and require more than 1 cycle to complete. Reducing the amount of NOPS inserted as delay slots after branch and memory instruction would also lead to significant improvements. The Xilinx timing report shows that the critical path happens in the decode stage from the opcode registry to the memory control for stores. In order to improve the frequency this will have to be changed. Taking these findings into account the following aspects of the processor will be improved first.
 
 \begin{enumerate}
-\item In the current processor the cache is directly mapped. Increasing the associativity of the cache may increase the cache hit rate and avoid having to stall.
-\item As mentioned in the project manual, the 32 cycle multiplier has room for improvement.
-\item The adder is used a lot in the given benchmarks. The adder can definitely be improved.
-\item Additional instructions can be implemented to speed up common instruction patterns.
-\item Usage of profiling to find these common instruction patterns.
+\item The multiplier will be improved so that it completes in less than 32 cycles.
+\item The critical path will be shortened, possibly by more pipelining.
+\item The compiler will be changed to remove the NOP instructions after each branch, and the processor will be improved to accommodate that change.
+\item An ALU will be added to the decode stage as an attempt to calculate the new opcode at the same time that the branch is evaluated.
 \end{enumerate}
 
-Profiling can be done by executing the benchmark in a simulation and dumping the instructions that were executed to an external file. Currently the program found in \texttt{emulator/mlite.exe} was used to generate the binary needed for counting instructions. A Python program was written to extract these from the dump. Problem is that is not clear whether the dump from \texttt{mlite.exe} does loop unrolling or not. Not unrolling the loops will give a wrong impression of the instructions that were executed. See Figure \ref{fig:instruction-count} for the instruction count from the \texttt{\_all} benchmark.
+%Profiling can be done by executing the benchmark in a simulation and dumping the instructions that were executed to an external file. Currently the program found in \texttt{emulator/mlite.exe} was used to generate the binary needed for counting instructions. A Python program was written to extract these from the dump. Problem is that is not clear whether the dump from \texttt{mlite.exe} does loop unrolling or not. Not unrolling the loops will give a wrong impression of the instructions that were executed. See Figure \ref{fig:instruction-count} for the instruction count from the \texttt{\_all} benchmark.
 
 \begin{figure}[H]
 \centering
