@@ -13,9 +13,13 @@ end;
 
 architecture logic of flip_flop is
 begin
-	if rst = '1':
-		q <= '0';
-	if rising_edge(clk) and ce = '1' then
-		q <= d;
-	end if;
+
+    process(clk, rst, ce, d)
+    begin
+        if rst = '1' then
+            q <= '0';
+        elsif rising_edge(clk) and ce = '1' then
+            q <= d;
+        end if;
+	end process;
 end;
