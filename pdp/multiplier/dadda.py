@@ -64,6 +64,25 @@ class FullAdder():
 
 #######################################################################
 
+class FlipFlop():
+
+	def __init__(self, d, q):
+		self.d = d
+		self.q = q
+
+	def simulate(self, d):
+		assert d != UNDEFINED
+		return d
+
+	def vhdl(self, label):
+		portMap = "{0}: flip_flop port map(clk => clk, rst => rst, ce => ce, d => {1}, q => {2});"
+		return portMap.format(label, self.d, self.q)
+
+	def __str__(self):
+		return 'FF   --> D: '+self.d+', Q: '+self.q
+
+#######################################################################
+
 class VHDLBuilder():
 
 	def __init__(self, reduction):
@@ -79,6 +98,9 @@ class VHDLBuilder():
 		vhdl = """\
 entity dadda_mult is
 	port(
+		clk    : in  std_logic;
+		rst    : in  std_logic;
+		ce     : in  std_logic;
 		sgn    : in  std_logic;
 		a, b   : in  std_logic_vector({0} downto 0);
 		c_mult : out std_logic_vector({1} downto 0)
@@ -100,6 +122,14 @@ end;
 		port(
 			a, b     : in  std_logic;
 			s, c_out : out std_logic
+		);
+	end component;
+
+	component flip_flop
+		port(
+			clk, rst : in  std_logic;
+			ce, d    : in  std_logic;
+			q        : out std_logic
 		);
 	end component;
 	"""
@@ -128,7 +158,10 @@ end;
 					vhdl += " : std_logic;\n"
 					count = 0
 
-		return vhdl[:-2] + " : std_logic;"
+		if count == 0:
+			return vhdl
+		else:
+			return vhdl[:-2] + " : std_logic;"
 
 	def buildPPG(self):
 		vhdl = ""
@@ -152,7 +185,8 @@ end;
 		whitespace = len(str(len(self.adders)))
 
 		for adder in self.adders:
-			label = 'adder' + str(counter).zfill(whitespace)
+			name = 'flipf' if isinstance(adder, FlipFlop) else 'adder'
+			label = name + str(counter).zfill(whitespace)
 			vhdl += "\t" + adder.vhdl(label) + "\n"
 			counter += 1
 
@@ -186,6 +220,7 @@ class Dadda:
 		self.iterations = 0
 		self.carryNum = 0
 		self.sumNum = 0
+		self.ffNum = 0
 		self.adders = []
 		self.signals = {}
 		self.params = {}
@@ -280,6 +315,21 @@ class Dadda:
 			else:
 				self.addAdder(FULL_ADDER, column)
 
+	def insertFlipFlops(self):
+		newCols = {}
+		for col, signals in self.cols.iteritems():
+			signalList = []
+			for signal in signals:
+				out = 'f' + str(self.ffNum)
+				ff = FlipFlop(signal, out)
+				self.adders.append(ff)
+				self.signals[out] = UNDEFINED
+				signalList.append(out)
+				self.ffNum += 1
+			newCols[col] = signalList
+
+		self.cols = newCols
+
 	def run(self):
 		# print "DADDA TREE SOLVER"
 		# print "By Leon Noordam\n"
@@ -295,6 +345,8 @@ class Dadda:
 			# self.printCols()
 			count += 1
 
+		self.insertFlipFlops()
+
 		for column in range(len(self.cols)):
 			colLength = len(self.cols[column])
 			if colLength == 2:
@@ -309,12 +361,12 @@ class Dadda:
 		halfAdderCount = 0
 
 		# print "Resulting Adder Structure:"
-		for adder in self.adders:
-			# print ' ' + str(adder)
-			if isinstance(adder, FullAdder):
-				fullAdderCount += 1
-			else:
-				halfAdderCount += 1
+		# for adder in self.adders:
+		# 	print ' ' + str(adder)
+		# 	if isinstance(adder, FullAdder):
+		# 		fullAdderCount += 1
+		# 	elif isinstance(adder, HalfAdder):
+		# 		halfAdderCount += 1
 		# print "Design consists of: %d Full and %d Half Adders\n" % (fullAdderCount, halfAdderCount)
 
 	def simulate(self, a, b, sgn):
@@ -402,6 +454,7 @@ if __name__ == '__main__':
 	signed = False
 	reduction = Dadda(BITS, signed)
 	reduction.run()
+	# exit()
 
 	builder = VHDLBuilder(reduction)
 	print builder.build()
