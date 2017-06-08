@@ -345,7 +345,7 @@ class Dadda:
 			# self.printCols()
 			count += 1
 
-		self.insertFlipFlops()
+		# self.insertFlipFlops()
 
 		for column in range(len(self.cols)):
 			colLength = len(self.cols[column])

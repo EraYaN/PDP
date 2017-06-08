@@ -7,15 +7,8 @@
 -- COPYRIGHT: Software placed into the public domain by the author.
 --    Software 'as is' without warranty.  Author liable for nothing.
 -- DESCRIPTION:
---    Implements the multiplication and division unit in 32 clocks.
+--    Implements the division unit in 32 clocks.
 --
--- MULTIPLICATION
--- long64 answer = 0;
--- for(i = 0; i < 32; ++i)
--- {
---    answer = (answer >> 1) + (((b&1)?a:0) << 31);
---    b = b >> 1;
--- }
 --
 -- DIVISION
 -- long upper=a, lower=0;
@@ -78,8 +71,7 @@ architecture logic of mult is
 	signal sum          : std_logic_vector(32 downto 0);
 
 	signal c_dadda_mult : std_logic_vector(63 downto 0);
-	signal aa, bb       : std_logic_vector(31 downto 0);
-	signal ce, sgn      : std_logic;
+	signal sgn          : std_logic;
 
 begin
  
@@ -92,60 +84,31 @@ begin
 	sum <= bv_adder(upper_reg, aa_reg, mode_reg);
 
 	-- Result
-	process(mult_func, mode_reg, c_dadda_mult, lower_reg, upper_reg, negate_reg)
+	process(mult_func, lower_reg, upper_reg, negate_reg)
 	begin
 		if mult_func = MULT_READ_LO then
-			if mode_reg = MODE_MULT then
-				c_mult <= c_dadda_mult(31 downto 0);
+			if negate_reg = '0' then
+				c_mult <= lower_reg;
 			else
-				if negate_reg = '0' then
-					c_mult <= lower_reg;
-				else
-					c_mult <= bv_negate(lower_reg);
-				end if;
+				c_mult <= bv_negate(lower_reg);
 			end if;
 		elsif mult_func = MULT_READ_HI then
-			if mode_reg = MODE_MULT then
-				c_mult <= c_dadda_mult(63 downto 32);
+			if negate_reg = '0' then
+				c_mult <= upper_reg;
 			else
-				if negate_reg = '0' then
-					c_mult <= upper_reg;
-				else
-					c_mult <= bv_negate(upper_reg);
-				end if;
+				c_mult <= bv_negate(upper_reg);
 			end if;
 		else
 			c_mult <= ZERO;
-		end if;
-
-	end process;
-
-	-- Dadda multiplier
-	process(mult_func, a, b)
-	begin
-		if mult_func = MULT_MULT or mult_func = MULT_SIGNED_MULT then
-			aa <= a;
-			bb <= b;
-			ce <= '1';
-			if mult_func = MULT_SIGNED_MULT then
-				sgn <= '1';
-			else
-				sgn <= '0';
-			end if;
-		else
-			aa <= ZERO;
-			bb <= ZERO;
-			ce <= '0';
-			sgn <= '0';
 		end if;
 	end process;
 
 	dadda: dadda_mult port map(
 		clk    => clk,
 		rst    => reset_in,
-		ce     => ce,
-		a      => aa,
-		b      => bb,
+		ce     => '1',
+		a      => aa_reg,
+		b      => bb_reg,
 		sgn    => sgn,
 		c_mult => c_dadda_mult
 	);
@@ -164,18 +127,29 @@ begin
 			bb_reg <= ZERO;
 			upper_reg <= ZERO;
 			lower_reg <= ZERO;
+			sgn <= '0';
 		elsif rising_edge(clk) then
 			case mult_func is
 				when MULT_WRITE_LO =>
 					lower_reg <= a;
 					negate_reg <= '0';
+					sgn <= '0';
 				when MULT_WRITE_HI =>
 					upper_reg <= a;
 					negate_reg <= '0';
+					sgn <= '0';
 				when MULT_MULT =>
 					mode_reg <= MODE_MULT;
+					count_reg <= "000010";
+					aa_reg <= a;
+					bb_reg <= b;
+					sgn <= '0';
 				when MULT_SIGNED_MULT =>
 					mode_reg <= MODE_MULT;
+					count_reg <= "000010";
+					aa_reg <= a;
+					bb_reg <= b;
+					sgn <= '1';
 				when MULT_DIVIDE =>
 					mode_reg <= MODE_DIV;
 					aa_reg <= b(0) & ZERO(30 downto 0);
@@ -183,6 +157,7 @@ begin
 					upper_reg <= a;
 					count_reg <= "100000";
 					negate_reg <= '0';
+					sgn <= '0';
 				when MULT_SIGNED_DIVIDE =>
 					mode_reg <= MODE_DIV;
 					if b(31) = '0' then
@@ -200,23 +175,28 @@ begin
 					aa_reg(30 downto 0) <= ZERO(30 downto 0);
 					count_reg <= "100000";
 					negate_reg <= a(31) xor b(31);
+					sgn <= '0';
 				when others =>
-					if count_reg /= "000000" and mode_reg = MODE_DIV then
-						-- Division
-						if sum(32) = '0' and aa_reg /= ZERO and
-						   bb_reg(31 downto 1) = ZERO(31 downto 1) then
-							upper_reg <= sum(31 downto 0);
-							lower_reg(0) <= '1';
+					if count_reg /= "000000" then
+						if mode_reg = MODE_MULT then
+							lower_reg <= c_dadda_mult(31 downto 0);
+							upper_reg <= c_dadda_mult(63 downto 32);
 						else
-							lower_reg(0) <= '0';
+							-- Division
+							if sum(32) = '0' and aa_reg /= ZERO and
+							   bb_reg(31 downto 1) = ZERO(31 downto 1) then
+								upper_reg <= sum(31 downto 0);
+								lower_reg(0) <= '1';
+							else
+								lower_reg(0) <= '0';
+							end if;
+							aa_reg <= bb_reg(1) & aa_reg(31 downto 1);
+							lower_reg(31 downto 1) <= lower_reg(30 downto 0);
+							bb_reg <= '0' & bb_reg(31 downto 1);
 						end if;
-						aa_reg <= bb_reg(1) & aa_reg(31 downto 1);
-						lower_reg(31 downto 1) <= lower_reg(30 downto 0);
-						bb_reg <= '0' & bb_reg(31 downto 1);
-
 						count_reg <= count_reg - count;
+						sgn <= sgn;
 					end if;
-
 			end case;
 		 
 	  end if;
