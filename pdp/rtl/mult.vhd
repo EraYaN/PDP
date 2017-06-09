@@ -134,13 +134,13 @@ begin
 					sgn <= '0';
 				when MULT_MULT =>
 					mode_reg <= MODE_MULT;
-					count_reg <= "000010";
+					count_reg <= "000001";
 					aa_reg <= a;
 					bb_reg <= b;
 					sgn <= '0';
 				when MULT_SIGNED_MULT =>
 					mode_reg <= MODE_MULT;
-					count_reg <= "000010";
+					count_reg <= "000001";
 					aa_reg <= a;
 					bb_reg <= b;
 					sgn <= '1';

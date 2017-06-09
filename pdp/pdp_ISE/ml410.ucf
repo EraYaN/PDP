@@ -19,13 +19,6 @@ TIMESPEC TS_board_clk = PERIOD "board_clk" 10000 ps;
 NET "sys_rst_pin" TIG;
 #NET "u1_plasma_top/DELAY/cnt<15>" TIG;
 
-# Multiplier multicycle constraints
-NET "u1_plasma_top/u1_plasma/u1_cpu/u8_mult/aa_*" TNM_NET = "mult_in";
-NET "u1_plasma_top/u1_plasma/u1_cpu/u8_mult/bb_*" TNM_NET = "mult_in";
-NET "u1_plasma_top/u1_plasma/u1_cpu/u8_mult/upper_*" TNM_NET = "mult_out";
-NET "u1_plasma_top/u1_plasma/u1_cpu/u8_mult/lower_*" TNM_NET = "mult_out";
-TIMESPEC TS_mult = FROM "mult_in" TO "mult_out" TS_clk * 2;
-
 # Assign processor and multiplier different parts of the FPGA
 INST "u1_plasma_top/*" AREA_GROUP = "plasma_top";
 AREA_GROUP "plasma_top" RANGE=CLOCKREGION_X0Y3:CLOCKREGION_X0Y4;

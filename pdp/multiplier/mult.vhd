@@ -46,9 +46,6 @@ architecture logic of mult is
 
 	component dadda_mult
 		port(
-			clk    : in  std_logic;
-			rst    : in  std_logic;
-			ce     : in  std_logic;
 			sgn    : in  std_logic;
 			a, b   : in  std_logic_vector(31 downto 0);
 			c_mult : out std_logic_vector(63 downto 0)
@@ -104,9 +101,6 @@ begin
 	end process;
 
 	dadda: dadda_mult port map(
-		clk    => clk,
-		rst    => reset_in,
-		ce     => '1',
 		a      => aa_reg,
 		b      => bb_reg,
 		sgn    => sgn,
@@ -140,13 +134,13 @@ begin
 					sgn <= '0';
 				when MULT_MULT =>
 					mode_reg <= MODE_MULT;
-					count_reg <= "000010";
+					count_reg <= "000001";
 					aa_reg <= a;
 					bb_reg <= b;
 					sgn <= '0';
 				when MULT_SIGNED_MULT =>
 					mode_reg <= MODE_MULT;
-					count_reg <= "000010";
+					count_reg <= "000001";
 					aa_reg <= a;
 					bb_reg <= b;
 					sgn <= '1';
