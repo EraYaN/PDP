@@ -17,7 +17,20 @@ TIMESPEC TS_board_clk = PERIOD "board_clk" 10000 ps;
 
 #Ignore paths coming from reset 
 NET "sys_rst_pin" TIG;
-#NET "u1_plasma_top/DELAY/cnt<15>" TIG; 
+#NET "u1_plasma_top/DELAY/cnt<15>" TIG;
+
+# Multiplier multicycle constraints
+NET "u1_plasma_top/u1_plasma/u1_cpu/u8_mult/aa_*" TNM_NET = "mult_in";
+NET "u1_plasma_top/u1_plasma/u1_cpu/u8_mult/bb_*" TNM_NET = "mult_in";
+NET "u1_plasma_top/u1_plasma/u1_cpu/u8_mult/upper_*" TNM_NET = "mult_out";
+NET "u1_plasma_top/u1_plasma/u1_cpu/u8_mult/lower_*" TNM_NET = "mult_out";
+TIMESPEC TS_mult = FROM "mult_in" TO "mult_out" TS_clk * 2;
+
+# Assign processor and multiplier different parts of the FPGA
+INST "u1_plasma_top/*" AREA_GROUP = "plasma_top";
+AREA_GROUP "plasma_top" RANGE=CLOCKREGION_X0Y3:CLOCKREGION_X0Y4;
+INST "u1_plasma_top/u1_plasma/u1_cpu/u8_mult/*" AREA_GROUP = "multiplier";
+AREA_GROUP "multiplier" RANGE=CLOCKREGION_X1Y3:CLOCKREGION_X1Y4;
 
 #Created by Constraints Editor (xc4vfx60-ff1152-11) - 2014/04/25
 
@@ -59,7 +72,8 @@ Net fpga_0_DDR_CLK_FB TNM_NET = fpga_0_DDR_CLK_FB;
 #Net fpga_0_PCI_CLK_FB IOSTANDARD = LVCMOS25;
 #Net fpga_0_PCI_CLK_FB TNM_NET = PCI_CLK;
 #Net PCI32_BRIDGE/OPB_Clk TNM_NET = SYS_CLK;
-#TIMESPEC TS_PCI_BUS = FROM PCI_CLK TO SYS_CLK 10000 ps;
+#TIMESPEC TS_PCI_BUS = FROM PCI_CLK TO SYS_CLK 10000 ps;
+
 #TIMESPEC "TS_PCI_BUS" = FROM "PCI_CLK" TO "SYS_CLK" 9.9ns datapathonly; 
 #TIMESPEC TS_BUS_PCI = FROM SYS_CLK TO PCI_CLK 30000 ps;
 # Net fpga_0_PCI_CLK_OUT0 LOC=V5;
