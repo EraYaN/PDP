@@ -18,9 +18,12 @@ vcom -quiet  -93  -work work   ../rtl/mult.vhd
 vcom -quiet  -93  -work work   ../rtl/pc_next.vhd
 vcom -quiet  -93  -work work   ../rtl/reg_bank.vhd
 vcom -quiet  -93  -work work   ../rtl/pipeline.vhd
+vcom -quiet  -93  -work work   ../rtl/full_adder.vhd
+vcom -quiet  -93  -work work   ../rtl/half_adder.vhd
 vcom -quiet  -93  -work work   ../rtl/shifter.vhd
 vcom -quiet  -93  -work work   ../rtl/uart.vhd
 vcom -quiet  -93  -work work   ../rtl/cache_ram.vhd
+vcom -quiet  -93  -work work   ../rtl/dadda_mult.vhd
 vcom -quiet  -93  -work work   ../rtl/cache.vhd
 vcom -quiet  -93  -work work   boot_ram_sim.vhd
 vcom -quiet  -93  -work work   ../rtl/mlite_cpu.vhd
