@@ -6,10 +6,14 @@
 \addbibresource{../../.library/bibliography.bib}
 \begin{document}
 \section{Benchmark profiling}
+%Todo: discuss custom profiler
 \begin{figure}[H]
 \centering
 \centerline{\includegraphics[width=1.2\textwidth]{resources/bar-chart.eps}}
 \caption{MIPS instruction count for the \_all benchmark.}
 \label{fig:instruction-count}
 \end{figure}
+
+\Cref{fig:instruction-count} serves as a great tool for finding possible avenues for improvement. It immediately becomes apparent that improving the multiplier should be the highest priority. Not only are a significant fraction of the instructions multiply instructions, they take a total of 32 cycles to complete per multiplication. Meaning there is plenty of room for improvement. Other frequently executed instructions are branch instructions (mostly BNE) and NOP instructions. A quick look at the assembly of the benchmarks shows that NOP instructions are often inserted in the assembly as a delay slot after a branch. Implementing a basic form of branch prediction coupled with changes in the compiler could both reduce the amount of NOPS in the code and the amount of cycles need for branch evaluation. Although the graph shows that the most frequently executed instructions are add instructions, improving the adder is not seen as a promising way of improving the performance as add instructions are already executed in 1 cycle.
+
 \end{document}
