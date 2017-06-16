@@ -6,14 +6,29 @@
 \addbibresource{../../.library/bibliography.bib}
 \begin{document}
 \section{Improvements}
-\subsection{Attempted}
-\subsubsection{Cache}
-\subsubsection{Pipeline}
-\subsubsection{Branching}
-\subsection{Succeeded}
-\subsubsection{Cache}
-\subsubsection{Multiplier}
-\subsubsection{Divider}
+Many improvements of the processor were attempted. Unfortunately, because of the difficulty of changing the architecture, not all of these attempts succeeded. This section discusses the failed attempts and why they failed, and the successful attempts and their merit.
+\subsection{Cache}
+\subsection{Pipeline}
+
+\subsection{Branching}
+As discussed in \cref{sec:benchprof}, there is room for improvement in the area of branching. In the original implementation of the processor there are four steps/cycles in the branching process:
+\begin{enumerate}
+\item The memory control presents the branch opcode it fetched
+\item Control decodes the opcode and passes the relevant paramaters to bus\_mux who evaluates whether the branch is taken. Meanwhile, the buffer instruction appears at the output of memory control
+\item The ALU computes the new PC while the pipeline is paused
+\item Memory control fetches the correct instruction while the buffer instruction enters the decode stage
+\end{enumerate}
+In this process, the buffer instruction refers to an instruction that is executed whether the branch is taken or not. Sometimes the compiler orders the instruction in such a way that this is a useful instruction. If the compiler is unable to find a suitable instruction, a NOP is inserted. Two main weak points are identified:
+\begin{enumerate}
+\item A cycle is wasted if the buffer instruction is a NOP
+\item The pipeline needs to pause for a cycle to calculate the PC
+\end{enumerate}
+The first point turned out to be hard to improve upon. The first plan of removing all delay slots and forcing the opcode to NOP if a branch was taken as a cheap branch not taken prediction quickly fell flat as the compiler often used the buffer slot for useful instructions that should be executed whether the branch is taken or not. The second point was investigated more thoroughly.
+
+The 
+
+\subsection{Multiplier}
+\subsection{Divider}
 %Size = FIFO=14 Slice = 4623
 %Size without: FIFO = 14 Slice = 4163
 \Cref{fig:instruction-count} shows that very few of the instructions executed in the benchmarks are divisions. This fact initially discouraged attempting to improve the divider. However, after multiple attempts at improving the processor in other areas proved to be unfruitful it was decided to take a second look at the divider anyway. While a small percentage of the instructions are divisions, one single division still takes 32 cycles making the impact on the performance of the processor more significant than \cref{fig:instruction-count} may suggest. 
@@ -22,6 +37,6 @@ The original implementation of the division algorithm in the processor is a very
 
 In order to accomplish calculating 2 bits per cycle the divisor ($d$) multiples $2d$ and $3d$ had to be pre-calculated. For $3d$ this required an adder, $2d$ is just a left shift of the divisor. Every cycle, the divisor and its multiples are shifted 2 bits to the right and subtracted from the dividend. Writing "11", "10" or "01" to the quotient if the $3d$, $2d$ or $1d$ subtraction leaves a positive partial remainder respectively. It then saves the partial remainder. If none of the subtractions leaves a positive partial remainder "00" is written to the quotient.
 
-This implementation succeeds at reducing the division from 32 cycles to 16 cycles, reducing the total execution time of all the benchmarks with 117 million cycles. Unfortunately the extra adders necessary for subtractions and pre-calculating the divisor multiples add a significant amount of area to the processor. With the $A_{CLB}$ as defined in \cref{sec:baseperf} increasing by 115.
+This implementation succeeds at reducing the division from 32 cycles to 16 cycles, reducing the total execution time of all the benchmarks with 117 million cycles. Unfortunately the extra adders necessary for subtractions and pre-calculating the divisor multiples add a significant amount of area to the processor. With the $A_{CLB}$ as defined in \cref{sec:baseperf} increasing by 115. Because of the significant increase in area and relatively limited decrease in cycles, implementing even higher radix dividers such as radix-8 was deemed undesirable.
 
 \end{document}
