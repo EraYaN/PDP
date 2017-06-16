@@ -1,0 +1,35 @@
+%!TEX program=xelatex
+%!TEX spellcheck = en_GB
+\documentclass[final]{article}
+\input{../.library/preamble.tex}
+\input{../.library/style.tex}
+\addbibresource{../.library/bibliography.bib}
+
+\title{Final Report}
+\newcommand{\thesubtitle}{\hfill}
+\author{~}
+\date{\today}
+
+\begin{document}
+\pagenumbering{roman}
+
+%----intro
+\subimport{../.library/}{title.tex}
+\newpage
+
+\tableofcontents
+\newpage
+
+\pagenumbering{arabic}
+\subimport{introduction/}{introduction.tex}
+\subimport{performance-eval/}{performance-eval.tex}
+\subimport{benchmark-eval/}{benchmark-eval.tex}
+\subimport{improvements/}{improvements.tex}
+\subimport{results/}{results.tex}
+\subimport{conclusion/}{conclusion.tex}
+\newpage
+\pagenumbering{Roman}
+
+\printbibliography
+%\subimport{appendices/}{appendices.tex}
+\end{document}
