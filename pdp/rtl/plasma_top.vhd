@@ -172,7 +172,7 @@ begin  --architecture
 		GENERIC MAP (
 			log_file      => log_file,
          use_cache     => use_cache,
-			CPU_CLOCK_MHZ => real(39.58)
+			CPU_CLOCK_MHZ => real(40)
 		)
 		PORT MAP (
 			clk          => clk,
