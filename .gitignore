@@ -350,6 +350,7 @@ pip-log.txt
 *.dpth
 *.lot
 *.lof
+*.xdv
 
 ###################
 ## Sublime Text

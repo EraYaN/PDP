@@ -12,14 +12,14 @@
 \definecolor{accent2}{RGB}{0,50,100}
 \definecolor{tu-cyan}{RGB}{0,166,214}
 
-\newcommand{\hsp}{\hspace{20pt}}
+\newcommand{\hsp}{\hspace{10pt}}
 % \titleformat{\chapter}[hang]{\Huge\headingfont}{\chapternumber\hsp\textcolor{accent2}{|}\hsp}{0pt}{\Huge\headingfont}
 
-% \titleformat{name=\chapter,numberless}[hang]{\Huge\headingfont}{\hsp\textcolor{accent2}{|}\hsp}{0pt}{\Huge\headingfont}
+\titleformat{name=\section,numberless}[block]{\LARGE\headingfont}{\hsp\textcolor{accent2}{|}\hsp}{0em}{}
 
-% \titleformat{\section}[block]{\LARGE\headingfont}{\arabic{chapter}.\arabic{section}}{0.4em}{}
-% \titleformat{\subsection}[block]{\Large\headingfont}{\arabic{chapter}.\arabic{section}.\arabic{subsection}}{0.4em}{}
-% \titleformat{\subsubsection}[block]{\large\headingfont}{\arabic{chapter}.\arabic{section}.\arabic{subsection}.\arabic{subsubsection}}{0.4em}{}
+\titleformat{\section}[block]{\LARGE\headingfont}{\arabic{section}\hsp\textcolor{accent2}{|}\hsp}{0em}{}
+\titleformat{\subsection}[block]{\Large\headingfont}{\arabic{section}.\arabic{subsection}}{0.4em}{}
+\titleformat{\subsubsection}[block]{\large\headingfont}{\arabic{section}.\arabic{subsection}.\arabic{subsubsection}}{0.4em}{}
 \renewcommand{\arraystretch}{1.2}
 \renewcommand{\baselinestretch}{1.25} 
 
