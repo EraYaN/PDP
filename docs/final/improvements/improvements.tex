@@ -28,6 +28,13 @@ The first point turned out to be hard to improve upon. The first plan of removin
 The 
 
 \subsection{Multiplier}
+The original multiplier implementation needs 32 cycles to compute the multiplication of two 32 bits input operands. It should be noted that during this operation, the pipeline is stalled. This is not a very efficient in respect to the average amount of Instructions Per Cycle (IPC). The results of the dynamic profiling (see \cref{fig:instruction-count}) show that that multiplication (\texttt{MULT} and \texttt{MULTU}) is used quite often. To improve performance, the goal is set to design a new multiplier that can do the multiplcation in only 1 clock cycle. By using this approach, the pipeline does not have to be stalled when doing multiplication.
+
+There are different approaches for implementing a multiplication algorithm. In general, the options are: basic, high-radix, tree and array multiplication. The original design uses a basic multiplier. This works by having two input registers for the 32 bit operants and one 64 bit output register. Each clock cycle a partial product is calculated, shifted left (depending on the weight) and added to the current value stored in the output register. For executing one multiplication, this sequence has to be repeated 32 times. In therms of area, this is very efficient. However, its performance could be better.
+
+To speed up the computation, the original implementation is replaced by a tree multiplier. Of course, a radix type multiplier would also make the multiplier faster, but it is more suited for a balanced design (optimal cycles/area). The goal here is to get the best performance possible. A full CSA tree multiplier requires a large amount of area, but will give the fastest design. For designing a full CSA tree multiplier two methods exist: Wallace and Dadda trees. According to this paper (INSERT REF), the Dadda tree is slightly faster in general. So the new multiplier will be a Dadda Tree multiplier.
+
+
 \subsection{Divider}
 %Size = FIFO=14 Slice = 4623
 %Size without: FIFO = 14 Slice = 4163

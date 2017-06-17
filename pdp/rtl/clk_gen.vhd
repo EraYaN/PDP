@@ -17,11 +17,11 @@ end;
 architecture logic of clk_gen is
 
 	signal clk0_bufg_in      :   std_logic;
-    signal clk0_bufg_out     :   std_logic;
-    signal clk_2x_bufg_in    :   std_logic;
-    signal clk_2x_bufg_out   :   std_logic;
-    signal clk_bufg_in       :   std_logic;
-    signal clk_bufg_out      :   std_logic;
+	signal clk0_bufg_out     :   std_logic;
+	signal clk_2x_bufg_in    :   std_logic;
+	signal clk_2x_bufg_out   :   std_logic;
+	signal clk_bufg_in       :   std_logic;
+	signal clk_bufg_out      :   std_logic;
    
 begin
 
@@ -33,8 +33,8 @@ begin
 			DLL_FREQUENCY_MODE    => "LOW",
 			DUTY_CYCLE_CORRECTION => TRUE,
 			DCM_AUTOCALIBRATION   => FALSE,
-			CLKFX_DIVIDE          => 24,
-			CLKFX_MULTIPLY        => 19,
+			CLKFX_DIVIDE          => 5,
+			CLKFX_MULTIPLY        => 4,
 			FACTORY_JF            => X"F0F0"
 		)
 		port map(

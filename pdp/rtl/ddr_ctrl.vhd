@@ -113,6 +113,7 @@ architecture logic of ddr_ctrl is
    constant STATE_READ3        : ddr_state_type := "0110";
    constant STATE_PRECHARGE    : ddr_state_type := "0111";
    constant STATE_PRECHARGE2   : ddr_state_type := "1000";
+	constant STATE_PRECHARGE3   : ddr_state_type := "1001";
 
    signal state_prev   : ddr_state_type;
    signal refresh_cnt  : std_logic_vector(7 downto 0);
@@ -183,7 +184,7 @@ begin
 
          when STATE_IDLE =>
             if refresh_cnt(7) = '1' then
-               state_current := STATE_PRECHARGE;
+               state_current := STATE_PRECHARGE3;
                command := COMMAND_AUTO_REFRESH;
             elsif active = '1' and no_start = '0' then
                state_current := STATE_ROW_ACTIVATE;
@@ -228,6 +229,9 @@ begin
             if no_stop = '0' then
                state_current := STATE_ROW_ACTIVE;
             end if;
+				
+			when STATE_PRECHARGE3 =>
+            state_current := STATE_PRECHARGE;
 
          when STATE_PRECHARGE =>
             state_current := STATE_PRECHARGE2;
