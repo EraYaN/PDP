@@ -65,7 +65,7 @@ architecture logic of plasma_top is
 		generic(
 			log_file      : string := "UNUSED";
 			CPU_CLOCK_MHZ : real := 39.58;
-            use_cache     : std_logic := '0');
+			use_cache     : std_logic := '0');
 		port(
 			clk          : in std_logic;
 			reset        : in std_logic;
@@ -132,19 +132,20 @@ architecture logic of plasma_top is
 	signal gpio0_out    : std_logic_vector(31 downto 0);
 	signal gpio0_in     : std_logic_vector(31 downto 0);
 	
-	signal dcm_lock	    : std_logic;
-	signal clk_2x	    : std_logic;
+	signal dcm_lock     : std_logic;
+	signal clk_2x	     : std_logic;
 	signal clk	        : std_logic;
 	signal init_done    : std_logic;
 	
 	signal sys_clk_in   : std_logic;
-	signal reset_in	    : std_logic;
-	signal reset	    : std_logic;
+	signal reset_in     : std_logic;
+	signal reset        : std_logic;
 	signal reset_cpu    : std_logic;
    
 begin  --architecture
-    
-	SYS_CLK_INST : IBUF               -- Clock must be buffered with IBUF(G) before use.
+   
+	-- Clock must be buffered with IBUFG before use.
+	SYS_CLK_INST: IBUFG
 		PORT MAP (
 			I  => SYS_CLK,
 			O  => sys_clk_in
@@ -152,14 +153,14 @@ begin  --architecture
    
 	reset_in <= not SYS_RESET;
 	
-    u0_clk: clk_gen
-        PORT MAP(
-            reset       => reset_in,
-            sys_clk     => sys_clk_in,
-            dcm_lock    => dcm_lock,
-            clk_2x      => clk_2x,
-            clk_o       => clk
-        );
+	u0_clk: clk_gen
+		PORT MAP(
+			reset       => reset_in,
+			sys_clk     => sys_clk_in,
+			dcm_lock    => dcm_lock,
+			clk_2x      => clk_2x,
+			clk_o       => clk
+		);
 		  	
 	reset <= reset_in or (not dcm_lock);
 	reset_cpu <= reset or (not init_done);
@@ -169,8 +170,9 @@ begin  --architecture
 
 	u1_plasma: plasma 
 		GENERIC MAP (
-			log_file    => log_file,
-            use_cache   => use_cache
+			log_file      => log_file,
+         use_cache     => use_cache,
+			CPU_CLOCK_MHZ => real(39.58)
 		)
 		PORT MAP (
 			clk          => clk,

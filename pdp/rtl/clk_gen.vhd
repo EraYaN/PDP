@@ -32,6 +32,7 @@ begin
 		generic map(
 			DLL_FREQUENCY_MODE    => "LOW",
 			DUTY_CYCLE_CORRECTION => TRUE,
+			DCM_AUTOCALIBRATION   => FALSE,
 			CLKFX_DIVIDE          => 24,
 			CLKFX_MULTIPLY        => 19,
 			FACTORY_JF            => X"F0F0"
