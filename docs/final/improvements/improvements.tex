@@ -19,7 +19,7 @@ Considering the default Plasma processor only utilized half of 4 implemented \SI
 As discussed in \cref{sec:benchprof}, there is room for improvement in the area of branching. In the original implementation of the processor there are four steps/cycles in the branching process:
 \begin{enumerate}
 \item The memory control presents the branch opcode it fetched
-\item Control decodes the opcode and passes the relevant paramaters to bus\_mux who evaluates whether the branch is taken. Meanwhile, the buffer instruction opcode appears at the output of memory control
+\item Control decodes the opcode and passes the relevant parameters to bus\_mux who evaluates whether the branch is taken. Meanwhile, the buffer instruction opcode appears at the output of memory control
 \item The ALU computes the new PC while the pipeline is paused
 \item Memory control fetches the correct instruction while the buffer instruction enters the decode stage
 \end{enumerate}
@@ -35,7 +35,7 @@ An improvement on the second point was attempted in the form of an extra adder i
 After both attempts at speeding up branching failed it was decided to forego pursuing further improvements. Saving a cycle in the (at most) 3 cycle long branching instructions turned out to be impossible without very large changes in the architecture of the processor.
 
 \subsection{Multiplier}
-The original multiplier implementation needs 32 cycles to compute the multiplication of two 32 bits input operands. It should be noted that during this operation, the pipeline is stalled. This is not a very efficient in respect to the average amount of Instructions Per Cycle (IPC). The results of the dynamic profiling (see \cref{fig:instruction-count}) show that that multiplication (\texttt{MULT} and \texttt{MULTU}) is used quite often. To improve performance, the goal is set to design a new multiplier that can do the multiplcation in only 1 clock cycle. By using this approach, the pipeline does not have to be stalled when doing multiplication.
+The original multiplier implementation needs 32 cycles to compute the multiplication of two 32 bits input operands. It should be noted that during this operation, the pipeline is stalled. This is not a very efficient in respect to the average amount of Instructions Per Cycle (IPC). The results of the dynamic profiling (see \cref{fig:instruction-count}) show that that multiplication (\texttt{MULT} and \texttt{MULTU}) is used quite often. To improve performance, the goal is set to design a new multiplier that can do the multiplication in only 1 clock cycle. By using this approach, the pipeline does not have to be stalled when doing multiplication.
 
 There are different approaches for implementing a multiplication algorithm. In general, the options are: basic, high-radix, tree and array multiplication. The original design uses a basic multiplier. This works by having two input registers for the 32 bit operands and one 64 bit output register. Each clock cycle a partial product is calculated, shifted left (depending on the weight) and added to the current value stored in the output register. For executing one multiplication, this sequence has to be repeated 32 times. In therms of area, this is very efficient. However, its performance could be better.
 
@@ -45,7 +45,7 @@ Designing a Dadda by hand is reasonable for up to two 8-bit operands. To design 
 
 For the multiplier to work on a frequency of 40 MHz, its critical path has an upper bound of 25 ns. Setting the frequency higher will make the upper bound smaller. The multiplier delay will depend on how the Xilinx place \& route tools will map the adder logic to the FPGA. If the critical path will violate the upper bound, some effort should be put in optimizing it. For example, Ramkumar \cite{ramkumar} proposes that by splitting the Dadda tree into two parts and replacing the Ripple Carry Adder (RCA), a delay reduction of 20.4\% can be achieved for a 32-bit multiplier. In this solution the RCA is replaced by a two RCAs with half the depth (one for each partial tree) and a small third RCA for summing the overlapping parts of the previous calculation. Finally, the result is computed by propagating the carry of the third RCA using a Multiplexer with Binary to Excess-1 Converter (MBEC).
 
-To deal with signed and unsigned numbers, the Dadda tree was modified to support both operations based on an input flag. When the flag asserts (whichs means that the multiplcation will be signed), the partial products are generated according to the modified Baugh-Wooley method. If $N$ is the number of partial products ($N=32$ here), it means that the first $N-1$ partial products have their MSB inverted and the last partial product has all bits inverted except for its MSB. Also, the first and last partial product receive an extra carry. The whole modification requires just a few adders. Chapter 11 of Parhami \cite{parhami} explains this operation in more detail.
+To deal with signed and unsigned numbers, the Dadda tree was modified to support both operations based on an input flag. When the flag asserts (which means that the multiplication will be signed), the partial products are generated according to the modified Baugh-Wooley method. If $N$ is the number of partial products ($N=32$ here), it means that the first $N-1$ partial products have their MSB inverted and the last partial product has all bits inverted except for its MSB. Also, the first and last partial product receive an extra carry. The whole modification requires just a few adders. Chapter 11 of Parhami \cite{parhami} explains this operation in more detail.
 
 \subsection{Divider}
 %Size = FIFO=14 Slice = 4623
@@ -92,7 +92,7 @@ The problems with the main memory could not be overcome so this also didn't make
 The problems with how the pausing of the processor was implemented and how a new instruction should be fetch while for example the divider runs, made this not feasible in the available time.
 
 \subsection{Frequency}
-In order to improve the frequency, one or more critical paths need to be identified. Next step is to check if anything can be done to improve the delay of these paths. Identification of long-delay paths is done using the PlanAhead tool. A list of the critial paths in the original design can be found in Table.
+In order to improve the frequency, one or more critical paths need to be identified. Next step is to check if anything can be done to improve the delay of these paths. Identification of long-delay paths is done using the PlanAhead tool. A list of the critical paths in the original design can be found in Table.
 
 \begin{center}
 \begin{tabular}{llllll}
@@ -104,7 +104,7 @@ To   & path6 &                           &                             &        
 \end{tabular}
 \end{center}
 
-It can be noted that in the critical path, the clock skew between \texttt{clk} and \texttt{clk\_2x} is quite large. The reason is that \texttt{clk} signal is generated using a toggeling flipflop sourced by \texttt{clk\_2x}. It is not common practice to use a logic element for generating clock signals, because of the extra delay added to the clock domain. A better approach would be to generate all used frequencies using a Digital Clock Manager (DCM). This building block ensures that different clock signals will we phased-aligned where possible. So, the clock skew can be eliminated by generating the same frequency using only the DCM.
+It can be noted that in the critical path, the clock skew between \texttt{clk} and \texttt{clk\_2x} is quite large. The reason is that \texttt{clk} signal is generated using a toggling flip-flop sourced by \texttt{clk\_2x}. It is not common practice to use a logic element for generating clock signals, because of the extra delay added to the clock domain. A better approach would be to generate all used frequencies using a Digital Clock Manager (DCM). This building block ensures that different clock signals will we phased-aligned where possible. So, the clock skew can be eliminated by generating the same frequency using only the DCM.
 
 After analysing the DDR controller block, the same kind of problem was found: usage of the clock signal as logic input for generating the DDR clock signals. This approach is not a good design practice, because it introduces extra skew between the clock domains. Effort was made to generate all clock signals (\texttt{clk}, \texttt{clk\_n}, \texttt{clk\_2x}) using two DCMs. Although simulation succeeded, the implementation refused to run on the FPGA. By removing the extra skew, timing was affected and the DDR controller probably relied on this extra skew to somehow ensure correct operation. The new proposed clock circuit can be seen in FigureX.
 
