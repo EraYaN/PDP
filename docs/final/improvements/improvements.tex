@@ -7,15 +7,18 @@
 \addbibresource{../../.library/bibliography.bib}
 \begin{document}
 \section{Improvements}
-Many improvements of the processor were attempted. Unfortunately, because of the difficulty of changing the architecture, not all of these attempts succeeded. This section discusses the failed attempts and why they failed, and the successful attempts and their merit.
+Many improvements of the processor were attempted. Unfortunately, because of the difficulty of changing the architecture of the processor, not all of these attempts succeeded. This section discusses the failed attempts and why they failed, and the successful attempts and their merit.
+
 \subsection{Cache}
-\subsection{Pipeline}
+The first part of the processor that was looked at was the cache. The original implementation of the cache is a \SI{4}{\kibi\byte} cache that is only able to cache the first \SI{2}{\mega\byte} of the RAM. The first improvements of the cache focused on increasing both the size of the cache and increasing the part of the RAM that can be cached. 
+
+Considering the default Plasma processor only utilized half of 4 implemented \SI{2}{\kibi\byte} memory blocks increasing the cache to \SI{8}{\kibi\byte} could be done without increasing the area footprint of the design. For the \SI{16}{\kibi\byte} design 5 extra \SI{2}{\kibi\byte} memory blocks were needed to accommodate not only the extra \SI{8}{\kibi\byte} worth of cache memory but also an extra \SI{2}{\kibi\byte} block for storing cache tags. This increases the area foot print of the \SI{16}{\kibi\byte} design with 5 $A_{FIFO16/RAMB16}$. Mapping \SI{4}{\mega\byte} instead of \SI{2}{\mega\byte} required an extra bit in the cache tag which was easy to implement for \SI{8}{\kibi\byte} and \SI{16}{\kibi\byte} as there was still room in the cache tag RAM. For the \SI{4}{\kibi\byte} version the \SI{2}{\kibi\byte} had to be adjusted to allow for \SI{2}{\byte} word sizes as the cache tags had grown to large for the standard RAM block. All improvements discussed here had a significant impact on the performance which is further discussed in \cref{sec:results}.
 
 \subsection{Branching}
 As discussed in \cref{sec:benchprof}, there is room for improvement in the area of branching. In the original implementation of the processor there are four steps/cycles in the branching process:
 \begin{enumerate}
 \item The memory control presents the branch opcode it fetched
-\item Control decodes the opcode and passes the relevant paramaters to bus\_mux who evaluates whether the branch is taken. Meanwhile, the buffer instruction appears at the output of memory control
+\item Control decodes the opcode and passes the relevant paramaters to bus\_mux who evaluates whether the branch is taken. Meanwhile, the buffer instruction opcode appears at the output of memory control
 \item The ALU computes the new PC while the pipeline is paused
 \item Memory control fetches the correct instruction while the buffer instruction enters the decode stage
 \end{enumerate}
@@ -24,9 +27,11 @@ In this process, the buffer instruction refers to an instruction that is execute
 \item A cycle is wasted if the buffer instruction is a NOP
 \item The pipeline needs to pause for a cycle to calculate the PC
 \end{enumerate}
-The first point turned out to be hard to improve upon. The first plan of removing all delay slots and forcing the opcode to NOP if a branch was taken as a cheap branch not taken prediction quickly fell flat as the compiler often used the buffer slot for useful instructions that should be executed whether the branch is taken or not. The second point was investigated more thoroughly.
+The first point turned out to be hard to improve upon. The first plan of removing all delay slots and forcing the opcode to NOP if a branch was taken as a cheap branch not taken prediction quickly fell flat as the compiler too often used the buffer slot for useful instructions that should be executed whether the branch is taken or not.
 
-The 
+An improvement on the second point was attempted in the form of an extra adder in the decode stage. The idea being that the new PC could be immediately determined while the bus\_mux evaluated whether or not the branch should be taken. After implementing the extra adder and getting everything to work in the simulator it would fail to function on the FPGA. The point of failure was determined to be that often whether or not the branch should be taken was dependent on the result of the instruction before the branch instruction. In other words, finishing the branch instruction in the same cycle where the result of the last instruction is being determined was infeasible. 
+
+After both attempts at speeding up branching failed it was decided to forego pursuing further improvements. Saving a cycle in the (at most) 3 cycle long branching instructions turned out to be impossible without very large changes in the architecture of the processor.
 
 \subsection{Multiplier}
 The original multiplier implementation needs 32 cycles to compute the multiplication of two 32 bits input operands. It should be noted that during this operation, the pipeline is stalled. This is not a very efficient in respect to the average amount of Instructions Per Cycle (IPC). The results of the dynamic profiling (see \cref{fig:instruction-count}) show that that multiplication (\texttt{MULT} and \texttt{MULTU}) is used quite often. To improve performance, the goal is set to design a new multiplier that can do the multiplcation in only 1 clock cycle. By using this approach, the pipeline does not have to be stalled when doing multiplication.
@@ -52,5 +57,37 @@ In order to accomplish calculating 2 bits per cycle the divisor ($d$) multiples 
 
 This implementation succeeds at reducing the division from 32 cycles to 16 cycles, reducing the total execution time of all the benchmarks with 117 million cycles. Unfortunately the extra adders necessary for subtractions and pre-calculating the divisor multiples add a significant amount of area to the processor. With the $A_{CLB}$ as defined in \cref{sec:baseperf} increasing by 115. Because of the significant increase in area and relatively limited decrease in cycles, implementing even higher radix dividers such as radix-8 was deemed undesirable.
 
+\subsection{Multi-channel memory and multifetch}
+To speed up the instruction fetch and also the data accesses, an option to explore was the second DDR chip on the development board.
+If connected this would double the data that could be read per cycle.
+The version that was attempted to add to the architecture was an ganged mode based dual channel implementation.
+This means the memory data bus was double the size, but can not be accessed independently.
+The main idea was that two instructions could be fetched at the same time.
+So the next instruction was already in the cache when it was needed.
+
+The second option was to just keep fetching data when the other units were working on something else.
+This would be basically and simple implementation of prefetch.
+One of the problems here is obviously (the lack of) branch prediction.
+This would have roughly the same effect but be easier to implement in that the second chip was not required.
+As it is mainly a logic and architectural change and not also the compiler/toolchain to change the ram file that is sent to the FPGA server.
+Especially not knowing when ever the scripts on the server would even support to also fill the second chip.
+
+These should minimalize the amount of time the processor was to wait for data or instructions.
+Sadly because of trouble implementing these in the allotted time it was decided to try to get a speed improvement elsewhere.
+The main obstacles were in the way the ddr\_ctrl was implemented and the RAM timings, simulation was fine mostly, but read/write errors occurred on the FPGA.
+It could be argued that one should implement the DDR2 memory on the development board given enough time.
+Maybe even using some of the IP in ISE.
+But this is far beyond the scope of this project.
+
+\subsection{Instruction level parallelism}
+To improve the speed of the processor it would be great to have the main ALU and de multiplier and divider units do work at the same time when the source and destination registers do not overlap.
+This means there need to be separate buses for each of these units, this makes control and mlite\_cpu much bigger.
+But the main problem that presented it self, was that there need to be multiple fetched instructions and they all need to be decoded.
+The first avenue was to just duplicate the decoder and group the mult and divider and the shifter and alu.
+The reg\_bank module now need extra outputs and inputs.
+An implementation based completely on flipflops instead of the RAM blocks as it is in the original design, had an area of at least 4 times the original.
+The good thing was that the frequency that could be supported was much higher.
+The problems with the main memory could not be overcome so this also didn't make it into the final design.
+The problems with how the pausing of the processor was implemented and how a new instruction should be fetch while for example the divider runs, made this not feasible in the available time.
 
 \end{document}
