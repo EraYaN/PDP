@@ -7,56 +7,128 @@
 \addbibresource{../../.library/bibliography.bib}
 \begin{document}
 \section{Improvements}
-Many improvements of the processor were attempted. Unfortunately, because of the difficulty of changing the architecture of the processor, not all of these attempts succeeded. This section discusses the failed attempts and why they failed, and the successful attempts and their merit.
+Many improvements of the processor were attempted.
+Unfortunately, because of the difficulty of changing the architecture of the processor, not all of these attempts succeeded.
+This section discusses the failed attempts and why they failed, and the successful attempts and their merit.
 
 \subsection{Cache}
 \label{sec:cache}
-The first part of the processor that was looked at was the cache. The original implementation of the cache is a \SI{4}{\kibi\byte} cache that is only able to cache the first \SI{2}{\mebi\byte} of the RAM. The first improvements of the cache focused on increasing both the size of the cache and increasing the part of the RAM that can be cached. 
+The first part of the processor that was looked at was the cache.
+The original implementation of the cache is a \SI{4}{\kibi\byte} cache that is only able to cache the first \SI{2}{\mebi\byte} of the RAM.
+The first improvements of the cache focused on increasing both the size of the cache and increasing the part of the RAM that can be cached. 
 
-Considering the default Plasma processor only utilized half of 4 implemented \SI{2}{\kibi\byte} memory blocks increasing the cache to \SI{8}{\kibi\byte} could be done without increasing the area footprint of the design. For the \SI{16}{\kibi\byte} design 5 extra \SI{2}{\kibi\byte} memory blocks were needed to accommodate not only the extra \SI{8}{\kibi\byte} worth of cache memory but also an extra \SI{2}{\kibi\byte} block for storing cache tags. This increases the area foot print of the \SI{16}{\kibi\byte} design with 5 $A_{FIFO16/RAMB16}$. Mapping \SI{4}{\mebi\byte} instead of \SI{2}{\mebi\byte} required an extra bit in the cache tag which was easy to implement for \SI{8}{\kibi\byte} and \SI{16}{\kibi\byte} as there was still room in the cache tag RAM. The \SI{16}{\kibi\byte} implementation even allowed for a free upgrade to \SI{8}{\mebi\byte} mapping as there was still room in the cache tag RAM, but this did not seem to cause a performance boost. For the \SI{4}{\kibi\byte} version the \SI{2}{\kibi\byte} had to be adjusted to allow for \SI{2}{\byte} word sizes as the cache tags had grown to large for the standard RAM block. All improvements discussed here had a significant impact on the performance which is further discussed in \cref{sec:results}.
+Considering the default Plasma processor only utilized half of 4 implemented \SI{2}{\kibi\byte} memory blocks increasing the cache to \SI{8}{\kibi\byte} could be done without increasing the area footprint of the design.
+For the \SI{16}{\kibi\byte} design 5 extra \SI{2}{\kibi\byte} memory blocks were needed to accommodate not only the extra \SI{8}{\kibi\byte} worth of cache memory but also an extra \SI{2}{\kibi\byte} block for storing cache tags.
+This increases the area foot print of the \SI{16}{\kibi\byte} design with 5 $A_{FIFO16/RAMB16}$.
+Mapping \SI{4}{\mebi\byte} instead of \SI{2}{\mebi\byte} required an extra bit in the cache tag which was easy to implement for \SI{8}{\kibi\byte} and \SI{16}{\kibi\byte} as there was still room in the cache tag RAM.
+The \SI{16}{\kibi\byte} implementation even allowed for a free upgrade to \SI{8}{\mebi\byte} mapping as there was still room in the cache tag RAM, but this did not seem to cause a performance boost.
+For the \SI{4}{\kibi\byte} version the \SI{2}{\kibi\byte} had to be adjusted to allow for \SI{2}{\byte} word sizes as the cache tags had grown to large for the standard RAM block.
+All improvements discussed here had a significant impact on the performance which is further discussed in \cref{sec:results}.
 
 \subsection{Branching}
-As discussed in \cref{sec:benchprof}, there is room for improvement in the area of branching. In the original implementation of the processor there are four steps/cycles in the branching process:
+As discussed in \cref{sec:benchprof}, there is room for improvement in the area of branching.
+In the original implementation of the processor there are four steps/cycles in the branching process:
 \begin{enumerate}
 \item The memory control presents the branch opcode it fetched
 \item Control decodes the opcode and passes the relevant parameters to bus\_mux who evaluates whether the branch is taken. Meanwhile, the buffer instruction opcode appears at the output of memory control
 \item The ALU computes the new PC while the pipeline is paused
 \item Memory control fetches the correct instruction while the buffer instruction enters the decode stage
 \end{enumerate}
-In this process, the buffer instruction refers to an instruction that is executed whether the branch is taken or not. Sometimes the compiler orders the instruction in such a way that this is a useful instruction. If the compiler is unable to find a suitable instruction, a NOP is inserted. Two main weak points are identified:
+In this process, the buffer instruction refers to an instruction that is executed whether the branch is taken or not.
+Sometimes the compiler orders the instruction in such a way that this is a useful instruction.
+If the compiler is unable to find a suitable instruction, a NOP is inserted.
+Two main weak points are identified:
 \begin{enumerate}
 \item A cycle is wasted if the buffer instruction is a NOP
 \item The pipeline needs to pause for a cycle to calculate the PC
 \end{enumerate}
-The first point turned out to be hard to improve upon. The first plan of removing all delay slots and forcing the opcode to NOP if a branch was taken as a cheap branch not taken prediction quickly fell flat as the compiler too often used the buffer slot for useful instructions that should be executed whether the branch is taken or not.
+The first point turned out to be hard to improve upon.
+The first plan of removing all delay slots and forcing the opcode to NOP if a branch was taken as a cheap branch not taken prediction quickly fell flat as the compiler too often used the buffer slot for useful instructions that should be executed whether the branch is taken or not.
 
-An improvement on the second point was attempted in the form of an extra adder in the decode stage. The idea being that the new PC could be immediately determined while the bus\_mux evaluated whether or not the branch should be taken. After implementing the extra adder and getting everything to work in the simulator it would fail to function on the FPGA. The point of failure was determined to be that often whether or not the branch should be taken was dependent on the result of the instruction before the branch instruction. In other words, finishing the branch instruction in the same cycle where the result of the last instruction is being determined was infeasible. 
+An improvement on the second point was attempted in the form of an extra adder in the decode stage.
+The idea being that the new PC could be immediately determined while the bus\_mux evaluated whether or not the branch should be taken.
+After implementing the extra adder and getting everything to work in the simulator it would fail to function on the FPGA.
+The point of failure was determined to be that often whether or not the branch should be taken was dependent on the result of the instruction before the branch instruction.
+In other words, finishing the branch instruction in the same cycle where the result of the last instruction is being determined was infeasible. 
 
-After both attempts at speeding up branching failed it was decided to forego pursuing further improvements. Saving a cycle in the (at most) 3 cycle long branching instructions turned out to be impossible without very large changes in the architecture of the processor.
+After both attempts at speeding up branching failed it was decided to forego pursuing further improvements.
+Saving a cycle in the (at most) 3 cycle long branching instructions turned out to be impossible without very large changes in the architecture of the processor.
 
 \subsection{Multiplier}
-The original multiplier implementation needs 32 cycles to compute the multiplication of two 32 bit input operands. It should be noted that during this operation, the pipeline is stalled. This is not a very efficient in respect to the average amount of Instructions Per Cycle (IPC). The results of the dynamic profiling (see \cref{fig:instruction-count}) show that that multiplication (\texttt{MULT} and \texttt{MULTU}) is used quite often. To improve performance, the goal is set to design a new multiplier that can do the multiplication in only 1 clock cycle. By using this approach, the pipeline does not have to be stalled when doing multiplication.
+The original multiplier implementation needs 32 cycles to compute the multiplication of two 32 bit input operands.
+It should be noted that during this operation, the pipeline is stalled.
+This is not a very efficient in respect to the average amount of Instructions Per Cycle (IPC).
+The results of the dynamic profiling (see \cref{fig:instruction-count}) show that that multiplication (\texttt{MULT} and \texttt{MULTU}) is used quite often.
+To improve performance, the goal is set to design a new multiplier that can do the multiplication in only 1 clock cycle.
+By using this approach, the pipeline does not have to be stalled when doing multiplication.
 
-There are different approaches for implementing a multiplication algorithm. In general, the options are: basic, high-radix, tree and array multiplication. The original design uses a basic multiplier. This works by having two input registers for the 32 bit operands and one 64 bit output register. Each clock cycle a partial product is calculated, shifted left (depending on the weight) and added to the current value stored in the output register. For executing one multiplication, this sequence has to be repeated 32 times. In therms of area, this is very efficient. However, its performance could be better.
+There are different approaches for implementing a multiplication algorithm.
+In general, the options are: basic, high-radix, tree and array multiplication.
+The original design uses a basic multiplier.
+This works by having two input registers for the 32 bit operands and one 64 bit output register.
+Each clock cycle a partial product is calculated, shifted left (depending on the weight) and added to the current value stored in the output register.
+For executing one multiplication, this sequence has to be repeated 32 times.
+In therms of area, this is very efficient.
+However, its performance could be better.
 
-To speed up the computation, the original implementation is replaced by a tree multiplier. Of course, a radix type multiplier would also make the multiplier faster, but it is more suited for a balanced design (optimal cycles/area). The goal here is to get the best performance possible. A full CSA tree multiplier requires a large amount of area, but will give the fastest design. For designing a full CSA tree multiplier two methods exist: Wallace and Dadda trees. According to Townsend \cite{townsend}, the Dadda tree is slightly faster in general. So the new multiplier will be a Dadda tree multiplier.
+To speed up the computation, the original implementation is replaced by a tree multiplier.
+Of course, a radix type multiplier would also make the multiplier faster, but it is more suited for a balanced design (optimal cycles/area).
+The goal here is to get the best performance possible.
+A full CSA tree multiplier requires a large amount of area, but will give the fastest design.
+For designing a full CSA tree multiplier two methods exist: Wallace and Dadda trees.
+According to Townsend \cite{townsend}, the Dadda tree is slightly faster in general.
+So the new multiplier will be a Dadda tree multiplier.
 
-Designing a Dadda by hand is reasonable for up to two 8-bit operands. To design a 32-bit multiplier, another method should be used. Instead, a Python script was written to build the Dadda tree. The scripts constructs the tree, reduces it using the Dadda algorithm and generates a list of full/half adders and sum/carry signals. The resulting netlist can be mapped to VHDL using a template. The script can be configured to use input operands of any bit size. The reason for doing so is simple: by setting the script to generate a VHDL description of an 8-bit multiplier, its results could still be checked by inspection. If this description is determined valid, scaling it up to 32 bits is done by changing a single line of code. After generating the Dadda tree, a VHDL testbench was written to verify the logic of the new multiplier.
+Designing a Dadda by hand is reasonable for up to two 8-bit operands.
+To design a 32-bit multiplier, another method should be used.
+Instead, a Python script was written to build the Dadda tree.
+The scripts constructs the tree, reduces it using the Dadda algorithm and generates a list of full/half adders and sum/carry signals.
+The resulting netlist can be mapped to VHDL using a template.
+The script can be configured to use input operands of any bit size.
+The reason for doing so is simple: by setting the script to generate a VHDL description of an 8-bit multiplier, its results could still be checked by inspection.
+If this description is determined valid, scaling it up to 32 bits is done by changing a single line of code.
+After generating the Dadda tree, a VHDL testbench was written to verify the logic of the new multiplier.
 
-For the multiplier to work on a frequency of \SI{40}{\mega\hertz}, its critical path has an upper bound of \SI{25}{\nano\second}. Setting the frequency higher will make the upper bound smaller. The multiplier delay will depend on how the Xilinx place \& route tools will map the adder logic to the FPGA. If the critical path will violate the upper bound, some effort should be put in optimizing it. For example, Ramkumar \cite{ramkumar} proposes that by splitting the Dadda tree into two parts and replacing the Ripple Carry Adder (RCA), a delay reduction of \SI{20.4}{\percent} can be achieved for a 32-bit multiplier. In this solution the RCA is replaced by a two RCAs with half the depth (one for each partial tree) and a small third RCA for summing the overlapping parts of the previous calculation. Finally, the result is computed by propagating the carry of the third RCA using a Multiplexer with Binary to Excess-1 Converter (MBEC).
+For the multiplier to work on a frequency of \SI{40}{\mega\hertz}, its critical path has an upper bound of \SI{25}{\nano\second}.
+Setting the frequency higher will make the upper bound smaller.
+The multiplier delay will depend on how the Xilinx place \& route tools will map the adder logic to the FPGA.
+If the critical path will violate the upper bound, some effort should be put in optimizing it.
+For example, Ramkumar \cite{ramkumar} proposes that by splitting the Dadda tree into two parts and replacing the Ripple Carry Adder (RCA), a delay reduction of \SI{20.4}{\percent} can be achieved for a 32-bit multiplier.
+In this solution the RCA is replaced by a two RCAs with half the depth (one for each partial tree) and a small third RCA for summing the overlapping parts of the previous calculation.
+Finally, the result is computed by propagating the carry of the third RCA using a Multiplexer with Binary to Excess-1 Converter (MBEC).
 
-To deal with signed and unsigned numbers, the Dadda tree was modified to support both operations based on an input flag. When the flag asserts (which means that the multiplication will be signed), the partial products are generated according to the modified Baugh-Wooley method. If $N$ is the number of partial products ($N=32$ here), it means that the first $N-1$ partial products have their MSB inverted and the last partial product has all bits inverted except for its MSB. Also, the first and last partial product receive an extra carry. The whole modification requires just a few adders. Chapter 11 of Parhami \cite{parhami} explains this operation in more detail.
+To deal with signed and unsigned numbers, the Dadda tree was modified to support both operations based on an input flag.
+When the flag asserts (which means that the multiplication will be signed), the partial products are generated according to the modified Baugh-Wooley method.
+If $N$ is the number of partial products ($N=32$ here), it means that the first $N-1$ partial products have their MSB inverted and the last partial product has all bits inverted except for its MSB.
+Also, the first and last partial product receive an extra carry.
+The whole modification requires just a few adders.
+Chapter 11 of Parhami \cite{parhami} explains this operation in more detail.
 
 \subsection{Divider}
 %Size = FIFO=14 Slice = 4623
 %Size without: FIFO = 14 Slice = 4163
-\Cref{fig:instruction-count} shows that very few of the instructions executed in the benchmarks are divisions. This fact initially discouraged attempting to improve the divider. However, after multiple attempts at improving the processor in other areas proved to be unfruitful it was decided to take a second look at the divider anyway. While a small percentage of the instructions are divisions, one single division still takes 32 cycles making the impact on the performance of the processor more significant than \cref{fig:instruction-count} may suggest. 
+\Cref{fig:instruction-count} shows that very few of the instructions executed in the benchmarks are divisions.
+This fact initially discouraged attempting to improve the divider.
+However, after multiple attempts at improving the processor in other areas proved to be unfruitful it was decided to take a second look at the divider anyway.
+While a small percentage of the instructions are divisions, one single division still takes 32 cycles making the impact on the performance of the processor more significant than \cref{fig:instruction-count} may suggest. 
 
-The original implementation of the division algorithm in the processor is a very simple shift and subtract algorithm. It shifts the divisor to the right attempting to subtract it from the dividend along the way. If the resulting value remains positive it saves the partial remainder and writes a '1' to the quotient, otherwise it does not subtract and it writes a '0'. It was decided to attempt improving the divider by implementing it as a higher radix divider as described by chapter 14 of the book Computer Arithmetic: Algorithms and Hardware Designs by B. Parhami \cite{parhami}. Upgrading to a radix-4 divider should already provide a speed-up of 2x as 2 bits of the quotient are now calculated in the same cycle.
+The original implementation of the division algorithm in the processor is a very simple shift and subtract algorithm.
+It shifts the divisor to the right attempting to subtract it from the dividend along the way.
+If the resulting value remains positive it saves the partial remainder and writes a '1' to the quotient, otherwise it does not subtract and it writes a '0'.
+It was decided to attempt improving the divider by implementing it as a higher radix divider as described by chapter 14 of the book Computer Arithmetic: Algorithms and Hardware Designs by B. Parhami \cite{parhami}.
+Upgrading to a radix-4 divider should already provide a speed-up of 2x as 2 bits of the quotient are now calculated in the same cycle.
 
-In order to accomplish calculating 2 bits per cycle the divisor ($d$) multiples $2d$ and $3d$ had to be pre-calculated. For $3d$ this required an adder, $2d$ is just a left shift of the divisor. Every cycle, the divisor and its multiples are shifted 2 bits to the right and subtracted from the dividend. Writing "11", "10" or "01" to the quotient if the $3d$, $2d$ or $1d$ subtraction leaves a positive partial remainder respectively. It then saves the partial remainder. If none of the subtractions leaves a positive partial remainder "00" is written to the quotient.
+In order to accomplish calculating 2 bits per cycle the divisor ($d$) multiples $2d$ and $3d$ had to be pre-calculated.
+For $3d$ this required an adder, $2d$ is just a left shift of the divisor.
+Every cycle, the divisor and its multiples are shifted 2 bits to the right and subtracted from the dividend.
+Writing "11", "10" or "01" to the quotient if the $3d$, $2d$ or $1d$ subtraction leaves a positive partial remainder respectively.
+It then saves the partial remainder.
+If none of the subtractions leaves a positive partial remainder "00" is written to the quotient.
 
-This implementation succeeds at reducing the division from 32 cycles to 16 cycles, reducing the total execution time of all the benchmarks with 117 million cycles. Unfortunately the extra adders necessary for subtractions and pre-calculating the divisor multiples add a significant amount of area to the processor. With the $A_{CLB}$ as defined in \cref{sec:baseperf} increasing by 115. Because of the significant increase in area and relatively limited decrease in cycles, implementing even higher radix dividers such as radix-8 was deemed undesirable.
+This implementation succeeds at reducing the division from 32 cycles to 16 cycles, reducing the total execution time of all the benchmarks with 117 million cycles.
+Unfortunately the extra adders necessary for subtractions and pre-calculating the divisor multiples add a significant amount of area to the processor.
+With the $A_{CLB}$ as defined in \cref{sec:baseperf} increasing by 115.
+Because of the significant increase in area and relatively limited decrease in cycles, implementing even higher radix dividers such as radix-8 was deemed undesirable.
 
 \subsection{Multi-channel memory and multifetch}
 To speed up the instruction fetch and also the data accesses, an option to explore was the second DDR chip on the development board.
@@ -73,7 +145,7 @@ This would have roughly the same effect but be easier to implement in that the s
 As it is mainly a logic and architectural change and not also the compiler/toolchain to change the ram file that is sent to the FPGA server.
 Especially not knowing when ever the scripts on the server would even support to also fill the second chip.
 
-These should minimalize the amount of time the processor was to wait for data or instructions.
+These should minimize the amount of time the processor was to wait for data or instructions.
 Sadly because of trouble implementing these in the allotted time it was decided to try to get a speed improvement elsewhere.
 The main obstacles were in the way the ddr\_ctrl was implemented and the RAM timings, simulation was fine mostly, but read/write errors occurred on the FPGA.
 It could be argued that one should implement the DDR2 memory on the development board given enough time.
@@ -92,11 +164,16 @@ The problems with the main memory could not be overcome so this also didn't make
 The problems with how the pausing of the processor was implemented and how a new instruction should be fetch while for example the divider runs, made this not feasible in the available time.
 
 \subsection{Frequency}
-In order to improve the frequency, one or more critical paths need to be identified. Next step is to check if anything can be done to improve the delay of these paths. Identification of long-delay paths is done using the PlanAhead tool. A list of the critical paths in the original design can be found in Table.
+In order to improve the frequency, one or more critical paths need to be identified.
+Next step is to check if anything can be done to improve the delay of these paths.
+Identification of long-delay paths is done using the PlanAhead tool.
+A list of the critical paths in the original design can be found in \cref{tab:crit-path-orig}.
 
 \begin{table}
 \centering
 \begin{tabular}{llllll}
+\caption{The ciritcal paths in the original design.}
+\label{tab:crit-path-orig}
 \toprule
      & \textbf{Path}  & \textbf{Slack}                     & \textbf{Skew}                       & \textbf{Requirement}                & \textbf{Clock} \\ 
 \midrule
@@ -109,8 +186,18 @@ In order to improve the frequency, one or more critical paths need to be identif
 \end{tabular}
 \end{table}
 
-It can be noted that in the critical path, the clock skew between \texttt{clk} and \texttt{clk\_2x} is quite large. The reason is that \texttt{clk} signal is generated using a toggling flip-flop sourced by \texttt{clk\_2x}. It is not common practice to use a logic element for generating clock signals, because of the extra delay added to the clock domain. A better approach would be to generate all used frequencies using a Digital Clock Manager (DCM). This building block ensures that different clock signals will we phased-aligned where possible. So, the clock skew can be eliminated by generating the same frequency using only the DCM.
+It can be noted that in the critical path, the clock skew between \texttt{clk} and \texttt{clk\_2x} is quite large.
+The reason is that \texttt{clk} signal is generated using a toggling flip-flop sourced by \texttt{clk\_2x}.
+It is not common practice to use a logic element for generating clock signals, because of the extra delay added to the clock domain.
+A better approach would be to generate all used frequencies using a Digital Clock Manager (DCM).
+This building block ensures that different clock signals will we phased-aligned where possible.
+So, the clock skew can be eliminated by generating the same frequency using only the DCM.
 
-After analysing the DDR controller block, the same kind of problem was found: usage of the clock signal as logic input for generating the DDR clock signals. This approach is not a good design practice, because it introduces extra skew between the clock domains. Effort was made to generate all clock signals (\texttt{clk}, \texttt{clk\_n}, \texttt{clk\_2x}) using two DCMs. Although simulation succeeded, the implementation refused to run on the FPGA. By removing the extra skew, timing was affected and the DDR controller probably relied on this extra skew to somehow ensure correct operation. The new proposed clock circuit can be seen in FigureX.
+After analysing the DDR controller block, the same kind of problem was found: usage of the clock signal as logic input for generating the DDR clock signals.
+This approach is not a good design practice, because it introduces extra skew between the clock domains.
+Effort was made to generate all clock signals (\texttt{clk}, \texttt{clk\_n}, \texttt{clk\_2x}) using two DCMs.
+Although simulation succeeded, the implementation refused to run on the FPGA.
+By removing the extra skew, timing was affected and the DDR controller probably relied on this extra skew to somehow ensure correct operation.
+The new proposed clock circuit can be seen in FigureX.
 
 \end{document}

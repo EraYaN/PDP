@@ -8,7 +8,8 @@
 \section{Results}
 \label{sec:results}
 The resulting amount of viable improvements produced with all improvement efforts combined turned out to be three.
-The cache was improved in terms of size and part of RAM that could be cached, a new multiplier was designed, and a new divider was designed. In this section, the impact of the successful improvements on the performance and area footprint of the processor is discussed.
+The cache was improved in terms of size and part of RAM that could be cached, a new multiplier was designed, and a new divider was designed.
+In this section, the impact of the successful improvements on the performance and area footprint of the processor is discussed.
 
 \subsection{Area}
 \label{sec:area}
@@ -26,7 +27,11 @@ The cache was improved in terms of size and part of RAM that could be cached, a 
 
 \end{table}
 
-\Cref{tab:areaincrease} shows the impact of each of the possible processor upgrades on the area footprint. As discussed in \cref{sec:cache} the \SI{8}{\kibi\byte} does not add any extra area as the original processor was implemented with more room in the cache memory than actually utilised. The extra area in the \SI{16}{\kibi\byte} design is cause by the addition of four \SI{2}{\kibi\byte} RAM blocks for the cache RAM and one \SI{2}{\kibi\byte} RAM block for the cache tag RAM. These area increases are rather small compared to the impact of adding a better multiplier and divider. The multiplier more than doubles the original 514.5 $A_{CLB}$ processor and the divider increases it with 22.4\% due to the extra slices needed for the large amount of adders in both designs.
+\Cref{tab:areaincrease} shows the impact of each of the possible processor upgrades on the area footprint.
+As discussed in \cref{sec:cache} the \SI{8}{\kibi\byte} does not add any extra area as the original processor was implemented with more room in the cache memory than actually utilised.
+The extra area in the \SI{16}{\kibi\byte} design is cause by the addition of four \SI{2}{\kibi\byte} RAM blocks for the cache RAM and one \SI{2}{\kibi\byte} RAM block for the cache tag RAM.
+These area increases are rather small compared to the impact of adding a better multiplier and divider.
+The multiplier more than doubles the original 514.5 $A_{CLB}$ processor and the divider increases it with 22.4\% due to the extra slices needed for the large amount of adders in both designs.
 
 \subsection{Benchmark cycles}
         \begin{table}[H]
@@ -52,7 +57,11 @@ The cache was improved in terms of size and part of RAM that could be cached, a 
 \end{table}
 
 
-\Cref{tab:cycledecrease} shows the amount of benchmark cycles saved in each improvement with respect to the original implementation. It can be seen that not each improvement uses the area increase it causes (as seen in \cref{sec:area}) as efficiently as the others. Different benchmarks benefit from different improvements. For example, ssearch and cjpeg only seem to gain from increasing the cache size while pi, fir, rsa, susan and ssd really utilise the new divider. Oddly enough, the only benchmark that sees a significant decrease in benchmark cycles when the divider is implemented is pi while the divide benchmark does not benefit from it at all.
+\Cref{tab:cycledecrease} shows the amount of benchmark cycles saved in each improvement with respect to the original implementation.
+It can be seen that not each improvement uses the area increase it causes (as seen in \cref{sec:area}) as efficiently as the others.
+Different benchmarks benefit from different improvements.
+For example, ssearch and cjpeg only seem to gain from increasing the cache size while pi, fir, rsa, susan and ssd really utilise the new divider.
+Oddly enough, the only benchmark that sees a significant decrease in benchmark cycles when the divider is implemented is pi while the divide benchmark does not benefit from it at all.
 
 \subsection{Compound metrics}
 
