@@ -34,7 +34,7 @@ These area increases are rather small compared to the impact of adding a better 
 The multiplier more than doubles the original 514.5 $A_{CLB}$ processor and the divider increases it with 22.4\% due to the extra slices needed for the large amount of adders in both designs.
 
 \subsection{Benchmark cycles}
-        \begin{table}[H]
+\begin{table}[H]
     \centering
     \caption{Reduction in amount of benchmark cycles provided by each improvement compared to the original processor}
     \label{tab:cycledecrease}
@@ -64,6 +64,48 @@ For example, ssearch and cjpeg only seem to gain from increasing the cache size 
 Oddly enough, the only benchmark that sees a significant decrease in benchmark cycles when the divider is implemented is pi while the divide benchmark does not benefit from it at all.
 
 \subsection{Compound metrics}
+There are several compound metrics listed below.
+\begin{description}
 
+    \item[Benchmark Score] This is in MCyc compensated for a higher running frequency when used, lower is better.
+    \item[Performance] This is the reciprocal of the benchmark score, higher is better.
+    \item[BS per Area] This is the benchmark score per area unit ($A_{CLB}$), higher is better.
+    \item[BS Area] This is the benchmark score times the area unit divided by a million.
 
+\end{description}
+
+\begin{table}[H]
+    \centering
+    \caption{Reduction in amount of benchmark cycles provided by each improvement compared to the original processor}
+    \label{tab:cycledecrease}
+    \begin{tabular}{llS[table-format=4.2]S[table-format=4.2]S[table-format=4.2]S[table-format=4.2]S[table-format=4.2]}
+        \toprule
+        \textbf{Variant}   &  \textbf{Benchmark} & \textbf{Benchmark Score} & \textbf{Area} & \textbf{Performance} & \textbf{BS per Area} & \textbf{BS Area}\\
+        \midrule
+            original       & bench\_all &    4323.10 &     541.50 &     231.32 &       7.98 &       2.34 \\
+            8kb            & bench\_all &    4001.36 &     541.50 &     249.91 &       7.39 &       2.17 \\
+            16kb           & bench\_all &    3827.65 &     546.50 &     261.26 &       7.00 &       2.09 \\
+            mult           & bench\_all &    2776.78 &    1076.75 &     360.13 &       2.58 &       2.99 \\
+            div            & bench\_all &    4161.50 &     656.50 &     240.30 &       6.34 &       2.73 \\
+            8kb+mult       & bench\_all &    2458.42 &    1076.75 &     406.76 &       2.28 &       2.65 \\
+            8kb+div        & bench\_all &    3843.14 &     656.50 &     260.20 &       5.85 &       2.52 \\
+            16kb+mult      & bench\_all &    2326.73 &    1081.75 &     429.79 &       2.15 &       2.52 \\
+            16kb+div       & bench\_all &    3711.45 &     661.50 &     269.44 &       5.61 &       2.46 \\
+            8kb+mult+div   & bench\_all &    2342.22 &    1191.75 &     426.95 &       1.97 &       2.79 \\
+            16kb+mult+div  & bench\_all &    2210.52 &    1196.75 &     452.38 &       1.85 &       2.65 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+First we will filter them on raw performance.
+\SI{70}{\percent} improvement is the cut-off.
+So we are left with 4 designs (order by area efficiency):
+\begin{itemize}
+ \item 8kb+mult
+ \item 16kb+mult
+ \item 8kb+mult+div 
+ \item 16kb+mult+div
+\end{itemize}
+
+We will now have a look at the power draw of these designs.
 \end{document}
