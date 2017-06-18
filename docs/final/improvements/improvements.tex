@@ -90,4 +90,21 @@ The good thing was that the frequency that could be supported was much higher.
 The problems with the main memory could not be overcome so this also didn't make it into the final design.
 The problems with how the pausing of the processor was implemented and how a new instruction should be fetch while for example the divider runs, made this not feasible in the available time.
 
+\subsection{Frequency}
+In order to improve the frequency, one or more critical paths need to be identified. Next step is to check if anything can be done to improve the delay of these paths. Identification of long-delay paths is done using the PlanAhead tool. A list of the critial paths in the original design can be found in Table.
+
+\begin{center}
+\begin{tabular}{llllll}
+     & Path  & Slack                     & Skew                        & Requirement                & Clock \\ \hline
+From & path1 & \multirow{2}{3em}{2.0 ns} & \multirow{2}{3em}{-0.2 ns}  & \multirow{2}{3em}{20.00ns} & clk   \\
+To   & path2 &                           &                             &                            & clk   \\ \hline
+From & path5 & \multirow{2}{3em}{1.6 ns} & \multirow{2}{3em}{-0.24 ns} & \multirow{2}{3em}{10.00ns} & clk2  \\
+To   & path6 &                           &                             &                            & clk   \\ \hline
+\end{tabular}
+\end{center}
+
+It can be noted that in the critical path, the clock skew between \texttt{clk} and \texttt{clk\_2x} is quite large. The reason is that \texttt{clk} signal is generated using a toggeling flipflop sourced by \texttt{clk\_2x}. It is not common practice to use a logic element for generating clock signals, because of the extra delay added to the clock domain. A better approach would be to generate all used frequencies using a Digital Clock Manager (DCM). This building block ensures that different clock signals will we phased-aligned where possible. So, the clock skew can be eliminated by generating the same frequency using only the DCM.
+
+After analysing the DDR controller block, the same kind of problem was found: usage of the clock signal as logic input for generating the DDR clock signals. This approach is not a good design practice, because it introduces extra skew between the clock domains. Effort was made to generate all clock signals (\texttt{clk}, \texttt{clk\_n}, \texttt{clk\_2x}) using two DCMs. Although simulation succeeded, the implementation refused to run on the FPGA. By removing the extra skew, timing was affected and the DDR controller probably relied on this extra skew to somehow ensure correct operation. The new proposed clock circuit can be seen in FigureX.
+
 \end{document}
