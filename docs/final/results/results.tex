@@ -11,6 +11,7 @@ The resulting amount of viable improvements produced with all improvement effort
 The cache was improved in terms of size and part of RAM that could be cached, a new multiplier was designed, and a new divider was designed. In this section, the impact of the successful improvements on the performance and area footprint of the processor is discussed.
 
 \subsection{Area}
+\label{sec:area}
 \begin{table}[H]
     \centering
     \caption{Area footprint increase caused by each improvement compared to the original processor implementation}
@@ -50,6 +51,10 @@ The cache was improved in terms of size and part of RAM that could be cached, a 
     \end{tabular}
 \end{table}
 
+
+\Cref{tab:cycledecrease} shows the amount of benchmark cycles saved in each improvement with respect to the original implementation. It can be seen that not each improvement uses the area increase it causes (as seen in \cref{sec:area}) as efficiently as the others. Different benchmarks benefit from different improvements. For example, ssearch and cjpeg only seem to gain from increasing the cache size while pi, fir, rsa, susan and ssd really utilise the new divider. Oddly enough, the only benchmark that sees a significant decrease in benchmark cycles when the divider is implemented is pi while the divide benchmark does not benefit from it at all.
+
 \subsection{Compound metrics}
+
 
 \end{document}
