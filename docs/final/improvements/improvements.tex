@@ -15,7 +15,7 @@ Many improvements of the processor were attempted. Unfortunately, because of the
 As discussed in \cref{sec:benchprof}, there is room for improvement in the area of branching. In the original implementation of the processor there are four steps/cycles in the branching process:
 \begin{enumerate}
 \item The memory control presents the branch opcode it fetched
-\item Control decodes the opcode and passes the relevant paramaters to bus\_mux who evaluates whether the branch is taken. Meanwhile, the buffer instruction appears at the output of memory control
+\item Control decodes the opcode and passes the relevant paramaters to bus\_mux who evaluates whether the branch is taken. Meanwhile, the buffer instruction opcode appears at the output of memory control
 \item The ALU computes the new PC while the pipeline is paused
 \item Memory control fetches the correct instruction while the buffer instruction enters the decode stage
 \end{enumerate}
@@ -24,9 +24,11 @@ In this process, the buffer instruction refers to an instruction that is execute
 \item A cycle is wasted if the buffer instruction is a NOP
 \item The pipeline needs to pause for a cycle to calculate the PC
 \end{enumerate}
-The first point turned out to be hard to improve upon. The first plan of removing all delay slots and forcing the opcode to NOP if a branch was taken as a cheap branch not taken prediction quickly fell flat as the compiler often used the buffer slot for useful instructions that should be executed whether the branch is taken or not. The second point was investigated more thoroughly.
+The first point turned out to be hard to improve upon. The first plan of removing all delay slots and forcing the opcode to NOP if a branch was taken as a cheap branch not taken prediction quickly fell flat as the compiler too often used the buffer slot for useful instructions that should be executed whether the branch is taken or not.
 
-The 
+An improvement on the second point was attempted in the form of an extra adder in the decode stage. The idea being that the new PC could be immediately determined while the bus\_mux evaluated whether or not the branch should be taken. After implementing the extra adder and getting everything to work in the simulator it would fail to function on the FPGA. The point of failure was determined to be that often whether or not the branch should be taken was dependent on the result of the instruction before the branch instruction. In other words, finishing the branch instruction in the same cycle where the result of the last instruction is being determined was infeasible. 
+
+After both attempts at speeding up branching failed it was decided to forego pursuing further improvements. Saving a cycle in the (at most) 3 cycle long branching instructions turned out to be impossible without very large changes in the architecture of the processor.
 
 \subsection{Multiplier}
 The original multiplier implementation needs 32 cycles to compute the multiplication of two 32 bits input operands. It should be noted that during this operation, the pipeline is stalled. This is not a very efficient in respect to the average amount of Instructions Per Cycle (IPC). The results of the dynamic profiling (see \cref{fig:instruction-count}) show that that multiplication (\texttt{MULT} and \texttt{MULTU}) is used quite often. To improve performance, the goal is set to design a new multiplier that can do the multiplcation in only 1 clock cycle. By using this approach, the pipeline does not have to be stalled when doing multiplication.
