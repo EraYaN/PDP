@@ -38,7 +38,7 @@ All the measured benchmarks are close to those reported in the project manual.
 
 For \cref{tab:baselineperformance} the steps from the project manual were followed to generate the specifications.
 For area 9 $A_{FIFO16/RAMB16}$ and 2022 $A_{SLICE}$ were found which resulted in an area of 514.5 $A_{CLB}$ when the weights of $A_{FIFO16/RAMB16} = A_{CLB}$ and $A_{SLICE} = A_{CLB}/4$ from the project manual were used.
-For frequency the minimum clock period was found to be \SI{23.686}{\nano\second} which resulted in \SI{42.219}{\mega\hertz} as the maximum frequency.
+For frequency the minimum clock period was found to be \SI{23.686}{\nano\second} which resulted in \SI{42.219}{\mega\hertz} as the maximum frequency with the actual frequency set at \SI{39.58}{\mega\hertz} in the VHDL description.
 Xilinx ISE suggested that the critical path of the processor that causes the \SI{23.686}{\nano\second} clock period limit was in the decode stage. 
 It should be noted though that the actual critical path is very dependent on the optimisations that ISE attempts, which in turn is dependent on the desired clock period in the timing constraints given to ISE.
 Power was estimated for the pi benchmark with \SI{1}{\milli\second} simulation time which resulted in a total power estimate of \SI{0.698}{\watt}.
@@ -63,8 +63,7 @@ The more detailed power analysis in \cref{fig:baselinepower} is not exactly the 
 
 \end{table}
 
-%TODO Make into proper image.
-This screenshot looks like shit.
+%TODO Make into proper image. This screenshot looks like shit.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.3\textwidth]{resources/baselinepower.png}

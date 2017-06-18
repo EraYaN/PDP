@@ -7,7 +7,10 @@
 \begin{document}
 \section{Benchmark profiling}
 \label{sec:benchprof}
-%Todo: discuss custom profiler
+
+In an attempt to get a better understanding of the benchmarks, the Plasma CPU simulator written in C code included in the project files was changed to log every instruction it executes.
+This provides us with the bar chart in \cref{fig:instruction-count}, showing the amount of times each instruction is executed when all benchmarks are run in sequence.
+
 \begin{figure}[H]
 \centering
 \centerline{\includegraphics[width=1.2\textwidth]{resources/bar-chart.eps}}

@@ -169,9 +169,9 @@ Next step is to check if anything can be done to improve the delay of these path
 Identification of long-delay paths is done using the PlanAhead tool.
 A list of the critical paths in the original design can be found in \cref{tab:crit-path-orig}.
 
-\begin{table}
+\begin{table}[H]
 \centering
-\caption{The ciritcal paths in the original design.}
+\caption{The critcal paths in the original design.}
 \label{tab:crit-path-orig}
 \begin{tabular}{llllll}
     \toprule
@@ -198,6 +198,6 @@ This approach is not a good design practice, because it introduces extra skew be
 Effort was made to generate all clock signals (\texttt{clk}, \texttt{clk\_n}, \texttt{clk\_2x}) using two DCMs.
 Although simulation succeeded, the implementation refused to run on the FPGA.
 By removing the extra skew, timing was affected and the DDR controller probably relied on this extra skew to somehow ensure correct operation.
-The new proposed clock circuit can be seen in FigureX.
+%TODO: dit fixen: The new proposed clock circuit can be seen in FigureX.
 
 \end{document}
