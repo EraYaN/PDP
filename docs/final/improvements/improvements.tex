@@ -7,9 +7,12 @@
 \addbibresource{../../.library/bibliography.bib}
 \begin{document}
 \section{Improvements}
-Many improvements of the processor were attempted. Unfortunately, because of the difficulty of changing the architecture, not all of these attempts succeeded. This section discusses the failed attempts and why they failed, and the successful attempts and their merit.
+Many improvements of the processor were attempted. Unfortunately, because of the difficulty of changing the architecture of the processor, not all of these attempts succeeded. This section discusses the failed attempts and why they failed, and the successful attempts and their merit.
+
 \subsection{Cache}
-\subsection{Pipeline}
+The first part of the processor that was looked at was the cache. The original implementation of the cache is a \SI{4}{\kibi\byte} cache that is only able to cache the first \SI{2}{\mega\byte} of the RAM. The first improvements of the cache focused on increasing both the size of the cache and increasing the part of the RAM that can be cached. 
+
+Considering the default Plasma processor only utilized half of 4 implemented \SI{2}{\kibi\byte} memory blocks increasing the cache to \SI{8}{\kibi\byte} could be done without increasing the area footprint of the design. For the \SI{16}{\kibi\byte} design 5 extra \SI{2}{\kibi\byte} memory blocks were needed to accommodate not only the extra \SI{8}{\kibi\byte} worth of cache memory but also an extra \SI{2}{\kibi\byte} block for storing cache tags. This increases the area foot print of the \SI{16}{\kibi\byte} design with 5 $A_{FIFO16/RAMB16}$. Mapping \SI{4}{\mega\byte} instead of \SI{2}{\mega\byte} required an extra bit in the cache tag which was easy to implement for \SI{8}{\kibi\byte} and \SI{16}{\kibi\byte} as there was still room in the cache tag RAM. For the \SI{4}{\kibi\byte} version the \SI{2}{\kibi\byte} had to be adjusted to allow for \SI{2}{\byte} word sizes as the cache tags had grown to large for the standard RAM block. All improvements discussed here had a significant impact on the performance which is further discussed in \cref{sec:results}.
 
 \subsection{Branching}
 As discussed in \cref{sec:benchprof}, there is room for improvement in the area of branching. In the original implementation of the processor there are four steps/cycles in the branching process:
