@@ -71,7 +71,7 @@ There are several compound metrics listed below.
 
     \item[Benchmark Score] This is in MCyc compensated for a higher running frequency when used, lower is better.
     \item[Performance] This is the reciprocal of the benchmark score, higher is better.
-    \item[BS per Area] This is the benchmark score per area unit ($A_{CLB}$), higher is better.
+    \item[Perf per Area] This is the performance times a thousand per area unit ($A_{CLB}$), higher is better.
     \item[BS Area] This is the benchmark score times the area unit divided by a million.
 
 \end{description}
@@ -82,7 +82,7 @@ There are several compound metrics listed below.
     \label{tab:compound-bench-all}
     \begin{tabular}{llS[table-format=4.2]S[table-format=4.2]S[table-format=4.2]S[table-format=4.2]S[table-format=4.2]}
         \toprule
-        \textbf{Variant}   &  \textbf{Benchmark} & \textbf{Benchmark Score} & \textbf{Area} & \textbf{Performance} & \textbf{Perf per Area} & \textbf{BS Area}\\
+        \textbf{Variant}   &  \textbf{Benchmark} & \textbf{Benchmark Score} & \textbf{Area} & \textbf{Performance} & \textbf{Perf. per Area} & \textbf{BS Area}\\
         \midrule
             original       & bench\_all &    4323.10 &     541.50 &     231.32 &     427.18 &       2.34 \\
             8kb            & bench\_all &    4001.36 &     541.50 &     249.91 &     461.52 &       2.17 \\
@@ -99,7 +99,7 @@ There are several compound metrics listed below.
     \end{tabular}
 \end{table}
 
-First we will filter them on raw performance.
+First the designs are filtered on raw performance.
 \SI{80}{\percent} improvement is the cut-off.
 So we are left with 3 designs '16kb+mult', '8kb+mult+div' and '16kb+mult+div'.
 
@@ -120,7 +120,7 @@ These designs were analysed further for their power consumption.
             original       & 0.698 &  331.4040 \\
             16kb+mult      & 0.710 &  605.3380 \\
             8kb+mult+div   & 0.716 &  596.2989 \\
-            16kb+mult+div  & ???   &    ?????  \\
+            16kb+mult+div  & 0.000 &    0.0  \\
         \bottomrule
     \end{tabular}
 \end{table}
