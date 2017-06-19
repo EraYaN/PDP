@@ -80,7 +80,7 @@ def BenchmarkScorePerArea(benchmarkScore,area):
 def BenchmarkScoreArea(benchmarkScore,area):
     return benchmarkScore/1e6*area
 
-def PerformanceArea(performance,area):
+def PerformancePerArea(performance,area):
     return performance*1000/area
 
 bench = 'bench_all'
@@ -92,7 +92,7 @@ for variant in variants:
     performance = Performance(benchmarkScore)
     benchmarkScoreperarea = BenchmarkScorePerArea(benchmarkScore,area)
     benchmarkScorearea = BenchmarkScoreArea(benchmarkScore,area)
-    performancearea = PerformanceArea(performance,area)
+    performanceperarea = PerformancePerArea(performance,area)
 
     #print("Variant:                 {0}".format(variant))    
     #print("Benchmark:               {0}".format(bench))
@@ -101,14 +101,14 @@ for variant in variants:
     #print("Performance:             {0:12,.3f} 1e6/BS".format(performance))
     #print("BenchmarkScorePerArea:   {0:12,.3f} BS/A_CLB".format(benchmarkScoreperarea))
     #print("BenchmarkScoreArea:      {0:12,.3f} BS/1e6*A_CLB".format(benchmarkScorearea))
-    #print("PerformanceArea:         {0:12,.3f} Perf*1e3/A_CLB".format(performancearea))
+    #print("PerformancePerArea:         {0:12,.3f} Perf*1e3/A_CLB".format(performanceperarea))
     print("{:14} & {:8} & {:10.2f} & {:10.2f} & {:10.2f} & {:10.2f} & {:10.2f} \\\\".format(
         variant,
-        bench,
+        bench.replace('_','\\_'),
         benchmarkScore,
         area,
         performance,
-        benchmarkScoreperarea,
+        performanceperarea,
         benchmarkScorearea
         )
     )
@@ -120,7 +120,7 @@ for combination in combinations:
     performance = Performance(benchmarkScore)
     benchmarkScoreperarea = BenchmarkScorePerArea(benchmarkScore,area)
     benchmarkScorearea = BenchmarkScoreArea(benchmarkScore,area)
-    performancearea = PerformanceArea(performance,area)
+    performanceperarea = PerformancePerArea(performance,area)
 
     #print("Combination:             {0}".format(variant))
     #print("Benchmark:               {0}".format(bench))
@@ -129,14 +129,14 @@ for combination in combinations:
     #print("Performance:             {0:12,.3f} 1e6/BS".format(performance))
     #print("BenchmarkScorePerArea:   {0:12,.3f} BS/A_CLB".format(benchmarkScoreperarea))
     #print("BenchmarkScoreArea:      {0:12,.3f} BS/1e6*A_CLB".format(benchmarkScorearea))
-    #print("PerformanceArea:         {0:12,.3f} Perf*1e3/A_CLB".format(performancearea))
+    #print("PerformancePerArea:         {0:12,.3f} Perf*1e3/A_CLB".format(performanceperarea))
     print("{:14} & {:8} & {:10.2f} & {:10.2f} & {:10.2f} & {:10.2f} & {:10.2f} \\\\".format(
         variant,
-        bench,
+        bench.replace('_','\\_'),
         benchmarkScore,
         area,
         performance,
-        benchmarkScoreperarea,
+        performanceperarea,
         benchmarkScorearea
         )
     )
