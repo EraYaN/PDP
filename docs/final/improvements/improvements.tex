@@ -177,11 +177,11 @@ A list of the critical paths in the original design can be found in \cref{tab:cr
     \toprule
          & \textbf{Path}  & \textbf{Slack}                     & \textbf{Skew}                       & \textbf{Requirement}                & \textbf{Clock} \\ 
     \midrule
-    \textbf{From} & path1 & \multirow{2}{*}{\SI{2.0}{\nano\second}} & \multirow{2}{*}{\SI{-0.2}{\nano\second}}  & \multirow{2}{*}{\SI{20.00}{\nano\second}} & clk   \\
-    \textbf{To}   & path2 &                           &                             &                            & clk   \\ 
+    \textbf{From} & u1\_plasma/u1\_cpu/u2\_mem\_ctrl/opcode\_reg\_30\_1 & \multirow{2}{*}{\SI{0.516}{\nano\second}} & \multirow{2}{*}{\SI{-4.409}{\nano\second}}  & \multirow{2}{*}{\SI{12.631}{\nano\second}} & clk   \\
+    \textbf{To}   & u2\_ddr/u2\_ddr/data\_write2\_30 &                           &                             &                            & clk\_2x   \\ 
     \midrule
-    \textbf{From} & path5 & \multirow{2}{*}{\SI{1.6}{\nano\second}} & \multirow{2}{*}{\SI{-0.24}{\nano\second}} & \multirow{2}{*}{\SI{10.00}{\nano\second}} & clk2  \\
-    \textbf{To}   & path6 &                           &                             &                            & clk   \\ 
+    \textbf{From} & u2\_ddr/u2\_ddr/data\_write2\_31 & \multirow{2}{*}{\SI{3.883}{\nano\second}} & \multirow{2}{*}{\SI{0.000}{\nano\second}} & \multirow{2}{*}{\SI{6.005}{\nano\second}} & clk\_2x  \\
+    \textbf{To}   & u2\_ddr/u2\_ddr/data\_write2\_47 &                           &                             &                            & clk\_2x   \\ 
     \bottomrule
 \end{tabular}
 \end{table}
@@ -192,12 +192,31 @@ It is not common practice to use a logic element for generating clock signals, b
 A better approach would be to generate all used frequencies using a Digital Clock Manager (DCM).
 This building block ensures that different clock signals will we phased-aligned where possible.
 So, the clock skew can be eliminated by generating the same frequency using only the DCM.
+A proposal for frequency synthesis using only DCMs was made, but unfortunately this did not make it into the final Design due to errors during runtime.
 
 After analysing the DDR controller block, the same kind of problem was found: usage of the clock signal as logic input for generating the DDR clock signals.
 This approach is not a good design practice, because it introduces extra skew between the clock domains.
 Effort was made to generate all clock signals (\texttt{clk}, \texttt{clk\_n}, \texttt{clk\_2x}) using two DCMs.
 Although simulation succeeded, the implementation refused to run on the FPGA.
 By removing the extra skew, timing was affected and the DDR controller probably relied on this extra skew to somehow ensure correct operation.
-%TODO: dit fixen: The new proposed clock circuit can be seen in FigureX.
+
+The final design has a different critical path, its details can be foud in \cref{tab:crit-path-final}.
+
+\begin{table}[H]
+\centering
+\caption{The critcal setup paths in the final design.}
+\label{tab:crit-path-final}
+\begin{tabular}{llllll}
+    \toprule
+         & \textbf{Path}  & \textbf{Slack}                     & \textbf{Skew}                       & \textbf{Requirement}                & \textbf{Clock} \\ 
+    \midrule
+    \textbf{From} & u0\_clk/clk\_bufg\_in & \multirow{2}{*}{\SI{0.363}{\nano\second}} & \multirow{2}{*}{\SI{0.000}{\nano\second}}  & \multirow{2}{*}{\SI{6.25}{\nano\second}} & clk\_2x   \\
+    \textbf{To}   & u2\_ddr/u2\_ddr/byte\_we\_reg2\_2 &                     &                             &                            & clk\_2x  \\ 
+    \midrule
+    \textbf{From} & u0\_clk/clk\_bufg\_in & \multirow{2}{*}{\SI{0.387}{\nano\second}} & \multirow{2}{*}{\SI{0.000}{\nano\second}} & \multirow{2}{*}{\SI{6.25}{\nano\second}} & clk\_2x  \\
+    \textbf{To}   & u2\_ddr/u2\_ddr/byte\_we\_reg2\_3 &                           &                             &                            & clk\_2x    \\ 
+    \bottomrule
+\end{tabular}
+\end{table}
 
 \end{document}

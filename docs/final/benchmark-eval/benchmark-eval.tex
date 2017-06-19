@@ -8,7 +8,9 @@
 \section{Benchmark profiling}
 \label{sec:benchprof}
 
-In an attempt to get a better understanding of the benchmarks, the Plasma CPU simulator written in C code included in the project files was changed to log every instruction it executes.
+In an attempt to get a better understanding of the benchmarks, the Plasma CPU simulator source was modified to log every instruction it processed.
+For certain benchmarks this resulted into a log of a few Gigabytes, that still would need to be processed by another script to get the total instruction count.
+So to speed up the tools, a second modification was made to also include the instruction counting in the C code of simulator, instead of writing a large log file.
 This provides us with the bar chart in \cref{fig:instruction-count}, showing the amount of times each instruction is executed when all benchmarks are run in sequence.
 
 \begin{figure}[H]
