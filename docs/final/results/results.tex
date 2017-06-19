@@ -63,6 +63,32 @@ Different benchmarks benefit from different improvements.
 For example, ssearch and cjpeg only seem to gain from increasing the cache size while pi, fir, rsa, susan and ssd really utilise the new divider.
 Oddly enough, the only benchmark that sees a significant decrease in benchmark cycles when the divider is implemented is pi while the divide benchmark does not benefit from it at all.
 
+\subsection{Power}
+\begin{figure}[H]
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.6\linewidth]{resources/power16mult}
+  \caption{\SI{16}{\kibi\byte} + mult (\SI{0.710}{\watt})}
+  \label{fig:16multpower}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.6\linewidth]{resources/power8multdiv}
+  \caption{\SI{8}{\kibi\byte} + mult + div (\SI{0.716}{\watt})}
+  \label{fig:8multdivpower}
+\end{subfigure}
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.6\linewidth]{resources/power16multdiv}
+  \caption{\SI{16}{\kibi\byte} + mult + div (\SI{0.716}{\watt})}
+  \label{fig:16multdivpower}
+\end{subfigure}
+\caption{Power consumption by hierarchy for three designs with total power estimation between brackets}
+\label{fig:powerresults}
+\end{figure}
+
+\Cref{fig:powerresults} shows power consumption tables produced by Xilinx ISE for three different designs. Because the power estimation process as laid out by the project manual was a very lengthy process, it was only run for three different designs that looked promising by virtue of their benchmark score and area. As can be expected adding extra components to the design increased the power usage slightly, though the difference with the original \SI{0.698}{\watt} is not that significant. Increasing the cache size from \SI{8}{\kibi\byte} to \SI{16}{\kibi\byte} while keeping the multiplier and the divider in the design did nothing to increase the power usage.
 
 \subsection{Compound metrics}
 \label{ssec:compound-metrics}
